@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mise en Situation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            cedre: {
+              50: '#f0fdf4',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              dark: '#0f381e',
+              card: '#0f172a', // Style carte foncée comme sur la maquette
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-full flex items-center justify-center p-4 sm:p-6 antialiased font-sans text-slate-800">
+
+  <!-- CARTE D'ENTRAÎNEMENT PRINCIPALE (Format écran unique Ancrage) -->
+  <div class="w-full max-w-xl bg-white rounded-3xl shadow-xl shadow-slate-200/80 border border-slate-200/80 p-6 sm:p-8 flex flex-col justify-between transition-all">
+
+    <!-- En-tête : Titre -->
+    <div>
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+          <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Mise en Situation <span class="text-emerald-700">"Ancrage"</span>
+          </h1>
+        </div>
+      </div>
+
+      <p class="text-xs sm:text-sm text-slate-500 leading-relaxed mb-5">
+        Générez une question d'objection spontanée pour vous entraîner :
+      </p>
+
+      <!-- Filtres rapides par Univers/Marché avec libellés exacts -->
+      <div class="flex flex-wrap items-center gap-1.5 mb-4">
+        <span class="text-[11px] font-bold text-slate-400 mr-1">Filtre :</span>
+        <button onclick="setFilter('all')" id="filter-all" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-700 text-white border border-emerald-700 transition">
+          Tous (<span id="count-all">0</span>)
+        </button>
+        <button onclick="setFilter('alim')" id="filter-alim" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Alimentation (<span id="count-alim">0</span>)
+        </button>
+        <button onclick="setFilter('sdr')" id="filter-sdr" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Sociétés de Restauration (SDR) (<span id="count-sdr">0</span>)
+        </button>
+        <button onclick="setFilter('med')" id="filter-med" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Dispositifs médicaux (<span id="count-med">0</span>)
+        </button>
+        <button onclick="setFilter('energie')" id="filter-energie" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          EnergiC (<span id="count-energie">0</span>)
+        </button>
+        <button onclick="setFilter('print')" id="filter-print" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Solutions d'impression (<span id="count-print">0</span>)
+        </button>
+        <button onclick="setFilter('it')" id="filter-it" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Informatique (<span id="count-it">0</span>)
+        </button>
+        <button onclick="setFilter('hyg')" id="filter-hyg" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Produits d'entretien (<span id="count-hyg">0</span>)
+        </button>
+        <button onclick="setFilter('demat')" id="filter-demat" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Solutions de dématarialisation (<span id="count-demat">0</span>)
+        </button>
+        <button onclick="setFilter('vr')" id="filter-vr" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Vérifications règlementaires (<span id="count-vr">0</span>)
+        </button>
+        <button onclick="setFilter('sdn')" id="filter-sdn" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Sociétés de Nettoyage (SDN) (<span id="count-sdn">0</span>)
+        </button>
+        <button onclick="setFilter('telecom')" id="filter-telecom" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Telecom (<span id="count-telecom">0</span>)
+        </button>
+        <button onclick="setFilter('ssi')" id="filter-ssi" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Systèmes de Sécurité Incendie (SSI) (<span id="count-ssi">0</span>)
+        </button>
+        <button onclick="setFilter('ascenseurs')" id="filter-ascenseurs" class="filter-btn text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          Ascenseurs (<span id="count-ascenseurs">0</span>)
+        </button>
+      </div>
+
+      <!-- Bloc Sombre / Carte Situation (Fidèle à l'image fournie) -->
+      <div class="bg-[#0b1329] text-white rounded-2xl p-5 sm:p-6 shadow-md relative border border-slate-800 transition-all duration-300">
+        <!-- Tag Marché -->
+        <div class="flex items-center justify-between text-[11px] font-bold tracking-wider text-sky-400 uppercase mb-3">
+          <span id="card-market">MARCHÉ : ALIMENTATION</span>
+          <span id="card-category-badge" class="text-[10px] text-slate-400 font-medium lowercase">objection client</span>
+        </div>
+
+        <!-- Citation Client en italique -->
+        <blockquote id="card-situation-text" class="text-sm sm:text-base font-semibold leading-snug tracking-wide italic text-slate-100">
+          « Chargement... »
+        </blockquote>
+      </div>
+
+      <!-- Tiroir Déroulant : Angle d'attaque & Riposte Terrain -->
+      <div class="mt-4">
+        <button id="btn-toggle-answer" onclick="toggleAnswer()" class="w-full text-left py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 transition flex items-center justify-between">
+          <span id="toggle-label" class="flex items-center space-x-1.5">
+            <span>💡</span>
+            <span>Voir l'angle de riposte & arguments clés</span>
+          </span>
+          <span id="toggle-icon" class="text-slate-400 transition-transform duration-200">▼</span>
+        </button>
+
+        <div id="answer-drawer" class="hidden mt-3 p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-xs text-slate-800 space-y-3">
+          <div>
+            <span class="font-extrabold uppercase text-[10px] tracking-wider text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded">Posture & Réflexe Cèdre</span>
+            <p id="answer-posture" class="mt-1 text-slate-700 leading-relaxed font-medium">
+              « Parfait, le marché est justement là pour sécuriser ce qui fonctionne déjà ! »
+            </p>
+          </div>
+
+          <div class="bg-white p-3 rounded-xl border border-emerald-100 shadow-sm space-y-1">
+            <span class="font-bold text-emerald-950 block text-[11px]">Arguments massues à sortir :</span>
+            <ul id="answer-points" class="list-disc list-inside space-y-1 text-slate-600 text-[11px] leading-relaxed">
+              <li>L'AOSM est prise en main de A à Z par nos experts restauration (CDC jusqu'à la signature).</li>
+              <li>Si son prestataire est référencé : continuité totale garantie dans un cadre contractuel optimisé (CDI, préavis 3 mois, révision encadrée).</li>
+              <li>Proposition immédiate : <em>« Faisons une Étude Économique (EE) gratuite et sans engagement pour situer objectivement vos conditions. »</em></li>
+            </ul>
+          </div>
+
+          <!-- Chiffre ou preuve terrain -->
+          <div id="answer-proof-box" class="p-2.5 rounded-lg bg-emerald-800 text-emerald-50 text-[11px] flex items-start space-x-2">
+            <span class="text-amber-300 font-bold flex-shrink-0">⚡ Preuve :</span>
+            <span id="answer-proof-text">125 AOSM menés en 2025 avec 100% de satisfaction (NPS). L'assurance d'un vrai suivi.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bouton Principal : Tirer un autre cas d'objection -->
+    <div class="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <button onclick="drawRandomCase()" class="w-full sm:w-auto flex-1 inline-flex items-center justify-center space-x-2 px-5 py-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-800 text-sm font-bold shadow-sm hover:shadow transition">
+        <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span>Tirer un autre cas d'objection</span>
+      </button>
+
+      <span id="case-counter" class="text-[11px] font-semibold text-slate-400">
+        Cas 1 / 12
+      </span>
+    </div>
+
+    <!-- Petit rappel discret du Slogan Cèdre -->
+    <div class="mt-4 text-center">
+      <span class="text-[10px] text-slate-400 tracking-wide font-medium">
+        le Cèdre • Bâtiment, Restauration, Médical, IT, Hygiène & Énergie • <em>« Recentrez-vous sur l'essentiel »</em>
+      </span>
+    </div>
+
+  </div>
+
+  <script>
+    const rawSituations = [
+      // ==========================================
+      // 1. ALIMENTATION (10 cas)
+      // ==========================================
+      {
+        tag: "alim",
+        market: "MARCHÉ : ALIMENTATION",
+        category: "double groupement & centrale concurrente",
+        question: "« Le client te dit : \"Nous adhérons déjà à une autre centrale d'achats pour l'épicerie, mais nous souhaitons tester Le Cèdre pour les surgelés.\" Tu réponds quoi ? »",
+        posture: "Rappeler la règle stricte de non-cumul et l'obligation de résiliation préalable auprès du groupement concurrent.",
+        points: [
+          "L'adhésion au marché Alimentation du Cèdre est incompatible avec l'appartenance à un autre groupement d'achats sur ce secteur.",
+          "Le double rattachement génère des blocages informatiques et des litiges d'attribution de RFA avec les distributeurs.",
+          "Le Cèdre fournit un modèle de courrier type de résiliation pour clarifier la situation avant tout rattachement."
+        ],
+        proof: "Règle formelle d'admission : validation de l'équipe Alimentation et résiliation obligatoire de l'autre groupement avant ouverture de compte."
+      },
+      {
+        tag: "alim",
+        market: "MARCHÉ : ALIMENTATION",
+        category: "sites multiples & inscription directe",
+        question: "« Le client te dit : \"Inscrivez notre siège social, nos quatre antennes locales passeront commande sous notre numéro.\" Tu réponds quoi ? »",
+        posture: "Exiger l'inscription individuelle de chaque site utilisateur réel.",
+        points: [
+          "Il est interdit d'inscrire un \"site mère\" pour le compte de ses établissements filles.",
+          "Chaque point de livraison et de préparation doit être identifié et rattaché pour fiabiliser la facturation, les mercuriales et le suivi des litiges."
+        ],
+        proof: "Règle de fonctionnement : seuls les établissements utilisateurs directs du marché peuvent être inscrits."
+      },
+      {
+        tag: "alim",
+        market: "MARCHÉ : ALIMENTATION",
+        category: "logiciel piano & mercuriales externes",
+        question: "« Le client te dit : \"Le logiciel de cuisine PIANO m'intéresse, mais j'ai des fournisseurs locaux qui ne sont pas référencés au Cèdre.\" Tu réponds quoi ? »",
+        posture: "Valoriser l'ouverture du module Approvisionnement aux mercuriales externes.",
+        points: [
+          "Le logiciel PIANO permet d'intégrer des fournisseurs hors Cèdre pour centraliser l'ensemble des commandes de la cuisine.",
+          "L'outil optimise la gestion des stocks, des fiches techniques et le respect des normes sanitaires (PMS / HACCP)."
+        ],
+        proof: "Tarif officiel du module Approvisionnement PIANO : 300 € HT/an (tarif actualisé en septembre 2026 pour application au 01/01/2027)."
+      },
+      {
+        tag: "alim",
+        market: "MARCHÉ : ALIMENTATION",
+        category: "remises logistiques & palier pro à pro",
+        question: "« Le client te dit : \"Pourquoi devrais-je regrouper mes achats chez un seul distributeur plutôt que d'éparpiller mes commandes ?\" Tu réponds quoi ? »",
+        posture: "Démontrer l'impact direct des remises de fin d'année individuelles liées au volume d'achat.",
+        points: [
+          "En massifiant les commandes épicerie ou frais chez le distributeur majeur, l'établissement franchit des paliers de remises logistiques substantielles.",
+          "Ce bonus individuel s'ajoute à la RFA collective reversée par Le Cèdre."
+        ],
+        proof: "Exemple Pro à Pro : 5 points (5 %) de remise logistique individuelle reversée dès 50 000 € d'achats annuels."
+      },
+      {
+        tag: "alim",
+        market: "MARCHÉ : ALIMENTATION",
+        category: "volatilité des cours mondiaux",
+        question: "« Le client te dit : \"Les cours mondiaux augmentent, mes fournisseurs répercutent des hausses tous les mois sans contrôle.\" Tu réponds quoi ? »",
+        posture: "Présenter le contrôle permanent des mercuriales exercé par les acheteurs Cèdre.",
+        points: [
+          "L'équipe Alimentation surveille l'évolution des mercuriales et bloque les dérives injustifiées.",
+          "Les adhérents disposent de 3 à 4 notes de conjoncture par an pour anticiper les tendances de marché."
+        ],
+        proof: "70 % à 80 % des volumes mis sous contrôle avec un indice tarifaire net audité."
+      },
+      {
+        tag: "alim",
+        market: "MARCHÉ : ALIMENTATION",
+        category: "mercuriale vs promotions ponctuelles",
+        question: "« Le client te dit : \"Mon cuisinier préfère courir après les promotions chez les grossistes du coin.\" Tu réponds quoi ? »",
+        posture: "Démontrer le surcoût caché de la gestion opportuniste face à une mercuriale négociée.",
+        points: [
+          "Les promotions ponctuelles ne couvrent qu'une part infime des besoins et masquent des prix élevés sur le reste du panier.",
+          "La mercuriale Cèdre stabilise les coûts sur les références consommées toute l'année."
+        ],
+        proof: "Environ 30 000 références cotées négociées sur 7 familles de produits."
+      },
+      {
+        tag: "alim",
+        market: "MARCHÉ : ALIMENTATION",
+        category: "réseau restau'co & egalim",
+        question: "« Le client te dit : \"Mon chef est isolé dans sa cuisine et manque d'outils pour appliquer la loi EGAlim.\" Tu réponds quoi ? »",
+        posture: "Valoriser le partenariat institutionnel avec le réseau Restau'Co.",
+        points: [
+          "Le Cèdre prend en charge l'adhésion au réseau Restau'Co pour tous les adhérents en restauration autogérée qui en font la demande.",
+          "L'association apporte formation continue, retours d'expériences et outils pratiques pour respecter les seuils EGAlim."
+        ],
+        proof: "Adhésion annuelle à l'association Restau'Co offerte par Le Cèdre."
+      },
+      {
+        tag: "alim",
+        market: "MARCHÉ : ALIMENTATION",
+        category: "gammes anti-gaspillage atypique & beesk",
+        question: "« Le client te dit : \"Je veux introduire des produits responsables sans faire exploser le coût matière.\" Tu réponds quoi ? »",
+        posture: "Activer les fournisseurs anti-gaspi référencés au catalogue.",
+        points: [
+          "Valorisation de denrées alimentaires hors calibres ou déclassées par la grande distribution.",
+          "Approvisionnement 100 % origine France à prix très inférieur aux circuits standards."
+        ],
+        proof: "Atypique propose des produits déclassés 100 % origine France jusqu'à 50 % en dessous des cours du marché."
+      },
+      {
+        tag: "alim",
+        market: "MARCHÉ : ALIMENTATION",
+        category: "spécialistes régionaux & terroir",
+        question: "« Le client te dit : \"Le national ne m'intéresse pas, nous voulons exclusivement de la viande locale.\" Tu réponds quoi ? »",
+        posture: "Présenter la cartographie des ateliers régionaux référencés.",
+        points: [
+          "Le référencement alimentaire intègre des acteurs de terroir pour respecter les circuits courts et les critères EGAlim.",
+          "Krill (8 distributeurs avec ateliers régionaux de viande fraîche), L'Atelier Corrézien (Limousine, Quercy), Thévenet Volailles (Bourgogne)."
+        ],
+        proof: "Partenaires spécialisés : Krill (8 ateliers régionaux), L'Atelier Corrézien, Grosdoit (Normandie) et Thévenet."
+      },
+      {
+        tag: "alim",
+        market: "MARCHÉ : ALIMENTATION",
+        category: "critères stricts d'éligibilité",
+        question: "« Un hôtel-restaurant indépendant ou une brasserie souhaite accéder aux mercuriales Cèdre. Tu réponds quoi ? »",
+        posture: "Énoncer les critères de refus d'admission définis par le marché.",
+        points: [
+          "Le marché est calibré pour les structures assurant un service de restauration collective ou commerciale organisée (scolaire, médico-social, foyers, tourisme social, communautés).",
+          "Les cafés, hôtels et restaurants (CHR) indépendants et les artisans de bouche ne sont pas éligibles."
+        ],
+        proof: "Seuil minimal requis : budget d'achats annuels de denrées > 15 000 € avec consommation sur les 3 familles (Frais, Surgelé, Épicerie)."
+      },
+
+      // ==========================================
+      // 2. SOCIÉTÉS DE RESTAURATION (SDR) (10 cas)
+      // ==========================================
+      {
+        tag: "sdr",
+        market: "MARCHÉ : SOCIÉTÉS DE RESTAURATION (SDR)",
+        category: "comparatif financier amo vs cèdre",
+        question: "« Le client te dit : \"Un cabinet d'AMO me demande 10 000 € par an pour renégocier mon contrat de restauration concédée.\" Tu réponds quoi ? »",
+        posture: "Chiffrer l'écart économique direct sur un cycle de 3 ans.",
+        points: [
+          "L'AMO facture des honoraires récurrents élevés sans faire bénéficier l'adhérent de RFA mutualisée.",
+          "Au Cèdre, la gestion contractuelle est financée par les frais d'adhésion inclus, avec retour de RFA sur le compte de la structure."
+        ],
+        proof: "Simulation 200 k€/an sur 3 ans : Coût AMO = 630 000 € vs Coût Cèdre = 586 200 €, soit 43 800 € d'économie nette pour l'établissement."
+      },
+      {
+        tag: "sdr",
+        market: "MARCHÉ : SOCIÉTÉS DE RESTAURATION (SDR)",
+        category: "négociation direct vs encadrement cèdre",
+        question: "« Le client te dit : \"Je négocie directement avec la société de restauration, j'ai obtenu un tarif très agressif.\" Tu réponds quoi ? »",
+        posture: "Dénoncer le risque de décrochage tarifaire dès la deuxième année.",
+        points: [
+          "Les SDR appliquent souvent des prix d'appel la première année avant d'imposer des formules d'indexation lourdes.",
+          "Le Cèdre verrouille les clauses d'évolution de prix et reverse la RFA négociée."
+        ],
+        proof: "Encadrement strict des révisions de prix et retour moyen de 2,3 % de RFA (ex. 4 600 €/an sur un budget de 200 000 €)."
+      },
+      {
+        tag: "sdr",
+        market: "MARCHÉ : SOCIÉTÉS DE RESTAURATION (SDR)",
+        category: "souplesse du cdi & préavis 3 mois",
+        question: "« Le client te dit : \"J'ai peur d'être bloqué pendant 5 ans si la qualité des repas se dégrade.\" Tu réponds quoi ? »",
+        posture: "Rappeler la structure juridique en contrat à durée indéterminée.",
+        points: [
+          "Le contrat-cadre Cèdre est conclu sous forme de CDI.",
+          "L'adhérent conserve sa liberté de résiliation en cas de défaillance non corrigée du prestataire."
+        ],
+        proof: "Contrat résiliable à tout moment avec un préavis formel de seulement 3 mois."
+      },
+      {
+        tag: "sdr",
+        market: "MARCHÉ : SOCIÉTÉS DE RESTAURATION (SDR)",
+        category: "maîtrise budgétaire vs moins disant",
+        question: "« Le client te dit : \"Le Cèdre va forcément augmenter mes coûts de restauration.\" Tu réponds quoi ? »",
+        posture: "Recadrer l'objectif du groupement sur la maîtrise et la transparence.",
+        points: [
+          "L'objectif n'est pas le 'moins cher à tout prix' au détriment de l'assiette, mais un budget strictement bordé sans dérapages cachés.",
+          "Moins d'achats hors contrat et des engagements de prix plafonds négociés collectivement."
+        ],
+        proof: "Mutualisation des volumes Cèdre pour fixer des prix maximum garantis."
+      },
+      {
+        tag: "sdr",
+        market: "MARCHÉ : SOCIÉTÉS DE RESTAURATION (SDR)",
+        category: "client satisfait en place depuis 10 ans",
+        question: "« Le client concédé te dit : \"Tout va bien avec notre prestataire, nous travaillons ensemble depuis plus de dix ans.\" Tu réponds quoi ? »",
+        posture: "Dérouler les questions de contrôle de la révision tarifaire et de la qualité.",
+        points: [
+          "Vérifier si la formule d'indexation initiale n'a pas dérivé au fil des années.",
+          "Auditer la proportion réelle de produits frais, bio et labellisés par rapport au prix facturé aux familles."
+        ],
+        proof: "Grille d'audit Cèdre : contrôle de la fréquence de révision, du suivi qualité et de l'équilibre alimentaire."
+      },
+      {
+        tag: "sdr",
+        market: "MARCHÉ : SOCIÉTÉS DE RESTAURATION (SDR)",
+        category: "prise en charge de l'aosm",
+        question: "« Le client te dit : \"Lancer une consultation pour changer de société de restauration est un chantier trop lourd pour notre équipe.\" Tu réponds quoi ? »",
+        posture: "Mettre en avant la décharge opérationnelle assurée par les équipes Cèdre.",
+        points: [
+          "Le service Marché élabore le cahier des charges, analyse les offres et organise les soutenances.",
+          "L'établissement se concentre sur ses arbitrages sans subir la charge administrative."
+        ],
+        proof: "Réduction de la charge de gestion grâce aux Appels d'Offres Sur Mesure (AOSM) menés par les experts Cèdre."
+      },
+      {
+        tag: "sdr",
+        market: "MARCHÉ : SOCIÉTÉS DE RESTAURATION (SDR)",
+        category: "règle du 4e prestataire local",
+        question: "« Le client te dit : \"Je ne souhaite consulter que mon restaurateur local qui n'est pas référencé chez vous.\" Tu réponds quoi ? »",
+        posture: "Expliquer l'ouverture de la procédure à un acteur hors référencement.",
+        points: [
+          "Lors d'une consultation sur mesure, l'adhérent a la possibilité d'intégrer une 4e entreprise locale non référencée.",
+          "Si cette entreprise remporte l'appel d'offres, elle signe le protocole d'accord Cèdre pour faire bénéficier le site de notre cadre de suivi."
+        ],
+        proof: "Protocole d'accord raccordant les prestataires locaux retenus aux garanties du Cèdre."
+      },
+      {
+        tag: "sdr",
+        market: "MARCHÉ : SOCIÉTÉS DE RESTAURATION (SDR)",
+        category: "repères budgétaires scolaire rcsp",
+        question: "« Quel ratio budgétaire annoncer à un directeur d'établissement scolaire pour situer son niveau de dépense ? »",
+        posture: "Restituer les moyennes indicatives du marché Cèdre.",
+        points: [
+          "Les volumes financiers sont directement corrélés au nombre de demi-pensionnaires (DP).",
+          "Permet d'évaluer rapidement la volumétrie d'un contrat de Repas Cuisiné Sur Place."
+        ],
+        proof: "Repères officiels Cèdre : 480 DP = environ 350 000 € de budget annuel ; 930 DP = environ 700 000 €."
+      },
+      {
+        tag: "sdr",
+        market: "MARCHÉ : SOCIÉTÉS DE RESTAURATION (SDR)",
+        category: "repères repas livrés & médico-social",
+        question: "« Quels sont les repères de coûts pour des repas livrés ou un établissement médico-social ? »",
+        posture: "Fournir les ordres de grandeur du marché 101.",
+        points: [
+          "Les coûts varient selon la présence de personnel de service ou la livraison simple.",
+          "Repas livrés avec personnel : 85 résidents = 400 000 € ; 70 DP = 70 000 €.",
+          "Établissement social/médico-social (EHPAD 65 résidents) = 300 000 €."
+        ],
+        proof: "Repas livrés simples : 58 DP = 22 000 € ; 200 DP = 70 000 €. Repas avec personnel : 85 résidents = 400 000 €."
+      },
+      {
+        tag: "sdr",
+        market: "MARCHÉ : SOCIÉTÉS DE RESTAURATION (SDR)",
+        category: "externalisation d'une cuisine en crise",
+        question: "« Une structure autogérée rencontre de graves pénuries de cuisiniers et des tensions de trésorerie. Tu réponds quoi ? »",
+        posture: "Proposer l'étude d'externalisation vers une SDR concédée.",
+        points: [
+          "Le passage en gestion concédée transfère le risque de recrutement et d'encadrement sur un professionnel de la restauration.",
+          "Le Cèdre sécurise le cahier des charges pour garantir la qualité culinaire attendue par les convives."
+        ],
+        proof: "Accompagnement neutre Cèdre pour arbitrer entre maintien de l'autogestion ou passage en concession."
+      },
+
+      // ==========================================
+      // 3. DISPOSITIFS MÉDICAUX (10 cas)
+      // ==========================================
+      {
+        tag: "med",
+        market: "MARCHÉ : DISPOSITIFS MÉDICAUX",
+        category: "consommables & pharmacie locale",
+        question: "« Le client te dit : \"J'achète tous mes pansements et gants chez le pharmacien du village pour maintenir le commerce local.\" Tu réponds quoi ? »",
+        posture: "Scinder l'achat du médicament réglementé et l'achat de gros volume de dispositifs médicaux.",
+        points: [
+          "Conserver le pharmacien d'officine pour le médicament de prescription.",
+          "Basculer les consommables volumineux sur les distributeurs régionaux ou nationaux Cèdre pour obtenir des remises quantitatives de gros."
+        ],
+        proof: "Économies directes via des mercuriales couvrant 70 % à 80 % du besoin, avec RFA de 2,5 % et remises logistiques de 0,5 % à 5 %."
+      },
+      {
+        tag: "med",
+        market: "MARCHÉ : DISPOSITIFS MÉDICAUX",
+        category: "garanties qualipsad & matelas à air",
+        question: "« Le client te dit : \"Quelles garanties sanitaires m'apportent vos prestataires sur la location et le nettoyage des matelas à air ?\" Tu réponds quoi ? »",
+        posture: "Mettre en avant la démarche de certification Qualipsad exigée par Le Cèdre.",
+        points: [
+          "Tous les prestataires référencés sont engagés dans le processus de certification Qualipsad.",
+          "Les protocoles de bionettoyage et de désinfection sont contrôlés entre chaque résident."
+        ],
+        proof: "3 garanties formelles Qualipsad : 1. Traçabilité des produits et prestations ; 2. Formation technique des équipes ; 3. Protocoles stricts de nettoyage/désinfection des DM (notamment matelas à air)."
+      },
+      {
+        tag: "med",
+        market: "MARCHÉ : DISPOSITIFS MÉDICAUX",
+        category: "changement de protection d'incontinence",
+        question: "« Le client te dit : \"Nos soignants refusent catégoriquement de changer de marque de protections d'incontinence.\" Tu réponds quoi ? »",
+        posture: "S'appuyer sur l'accompagnement soignant et le Plan d'Amélioration Budgétaire.",
+        points: [
+          "Les fabricants référencés dépêchent des conseillers techniques sur place pour former les soignants et ajuster les plans de change.",
+          "Le changement permet d'optimiser l'ergonomie et de tester de nouvelles capacités d'absorption."
+        ],
+        proof: "Engagement contractuel des fabricants sur un 'Plan d'Amélioration Budgétaire' pour maîtriser la dépense globale sans perte de qualité de soin."
+      },
+      {
+        tag: "med",
+        market: "MARCHÉ : DISPOSITIFS MÉDICAUX",
+        category: "maintenance négociée à l'achat",
+        question: "« Le client te dit : \"J'achète mes lits médicalisés au prix le plus bas sur internet, je verrai pour l'entretien plus tard.\" Tu réponds quoi ? »",
+        posture: "Rappeler la règle d'or du Cèdre sur l'achat d'équipement.",
+        points: [
+          "Acheter un matériel sans négocier le contrat de maintenance préventive et curative expose l'établissement à des factures de réparation incontrôlées.",
+          "Le coût global de possession (TCO) doit être verrouillé dès la commande initiale."
+        ],
+        proof: "Règle formelle Cèdre : négocier systématiquement le contrat de maintenance au moment de l'achat de l'équipement avec l'appui de l'équipe dédiée."
+      },
+      {
+        tag: "med",
+        market: "MARCHÉ : DISPOSITIFS MÉDICAUX",
+        category: "ratio repère 80 résidents",
+        question: "« Quel volume financier prévisionnel représente le poste médical pour un EHPAD de 80 résidents ? »",
+        posture: "Restituer les ratios budgétaires officiels de la fiche Marchés Médicaux.",
+        points: [
+          "Le poste médical et l'incontinence constituent un gisement d'économies massif qu'il faut auditer en priorité.",
+          "Permet de situer rapidement les dotations et dépenses courantes de l'établissement."
+        ],
+        proof: "Repères officiels Cèdre pour 80 résidents : au moins 70 000 € de budget Dispositifs Médicaux (DM) et au moins 35 000 € pour les produits d'incontinence."
+      },
+      {
+        tag: "med",
+        market: "MARCHÉ : DISPOSITIFS MÉDICAUX",
+        category: "homogénéité du parc de lits & tms",
+        question: "« Le client te dit : \"Nous avons six marques différentes de lits dans notre structure, nous remplaçons au coup par coup.\" Tu réponds quoi ? »",
+        posture: "Préconiser l'homogénéisation du parc pour limiter la pénibilité du personnel soignant.",
+        points: [
+          "Un parc hétérogène complique la maintenance, la gestion des pièces détachées et la manipulation quotidienne par les aides-soignants.",
+          "L'homogénéisation facilite l'utilisation et ouvre l'accès à des aides pour prévenir les troubles musculo-squelettiques (TMS)."
+        ],
+        proof: "Diagnostic de parc et accompagnement Cèdre sur l'investissement en lits homogènes et rails de transfert."
+      },
+      {
+        tag: "med",
+        market: "MARCHÉ : DISPOSITIFS MÉDICAUX",
+        category: "concept du lit prêt à partir",
+        question: "« Le client te dit : \"Configurer un lit médicalisé est trop technique, les devis contiennent des dizaines d'options.\" Tu réponds quoi ? »",
+        posture: "Présenter l'offre packagée 'prêt à partir' des fabricants référencés.",
+        points: [
+          "Le Cèdre négocie des modèles complets incluant toutes les fonctions de sécurité essentielles sans options payantes obligatoires.",
+          "Le choix de l'établissement se concentre sur l'essentiel : barrières, teinte du châssis et finitions tête/pied."
+        ],
+        proof: "Référencement de fabricants nationaux et internationaux de lits proposant des configurations pré-négociées complètes."
+      },
+      {
+        tag: "med",
+        market: "MARCHÉ : DISPOSITIFS MÉDICAUX",
+        category: "pilotage digital des locations",
+        question: "« Le client te dit : \"Nous avons des difficultés à savoir quel matériel est en location et depuis combien de temps.\" Tu réponds quoi ? »",
+        posture: "Mettre en avant l'espace de commande et de gestion digitalisé.",
+        points: [
+          "Le personnel soignant est guidé par les équipes Cèdre pour utiliser le portail de commande.",
+          "La plateforme centralise le suivi des commandes courantes, les durées de location et les interventions de maintenance."
+        ],
+        proof: "Outil digitalisé permettant d'éviter les prolongations de location inutiles et de maîtriser les coûts de maintenance."
+      },
+      {
+        tag: "med",
+        market: "MARCHÉ : DISPOSITIFS MÉDICAUX",
+        category: "panel fabricants vs distributeurs",
+        question: "« Comment s'organise le panel de fournisseurs sur le marché médical du Cèdre ? »",
+        posture: "Présenter la double structure distributeurs / fabricants spécialisés.",
+        points: [
+          "Distributeurs nationaux et régionaux pour les consommables, le petit matériel et le service de livraison de proximité.",
+          "Fabricants spécialisés pour les équipements lourds : lits, rails de transfert, mobilier de salle de soin et baignoires."
+        ],
+        proof: "Panel référencé couvrant distributeurs de proximité et grands fabricants direct usine."
+      },
+      {
+        tag: "med",
+        market: "MARCHÉ : DISPOSITIFS MÉDICAUX",
+        category: "découverte médico-sociale gir & budget",
+        question: "« Quels éléments factuels relever lors d'une première visite dans un établissement médico-social ? »",
+        posture: "Collecter les indicateurs de dépendance et l'état des équipements.",
+        points: [
+          "Nombre de résidents accueillis et niveau de dépendance (GIR / GMP).",
+          "Âge moyen du parc de lits, marques en place, présence de rails de transfert et identification des fournisseurs d'incontinence actuels."
+        ],
+        proof: "Grille de préqualification permettant de chiffrer immédiatement le potentiel sur les DM et l'incontinence."
+      },
+
+      // ==========================================
+      // 4. ENERGIC (10 cas)
+      // ==========================================
+      {
+        tag: "energie",
+        market: "MARCHÉ : ENERGIC",
+        category: "volatilité boursière & groupement",
+        question: "« Le client te dit : \"Les marchés de l'énergie font le yoyo, c'est impossible d'établir un budget prévisionnel fiable.\" Tu réponds quoi ? »",
+        posture: "Présenter l'offre groupée ÉnergiC comme stabilisateur budgétaire.",
+        points: [
+          "Sécurisez votre budget face à la volatilité des cours en vous déchargeant de la gestion administrative sur les experts Cèdre.",
+          "Les achats groupés permettent de fixer des conditions tarifaires pérennes dans un contexte géopolitique incertain."
+        ],
+        proof: "2 700 structures adhérentes inscrites représentant un volume global de 1,2 TWh sous gestion."
+      },
+      {
+        tag: "energie",
+        market: "MARCHÉ : ENERGIC",
+        category: "preuve chiffrée sacré-cœur 48",
+        question: "« Le client te dit : \"Donne-moi une preuve concrète d'une économie réalisée sur un contrat d'électricité d'envergure.\" Tu réponds quoi ? »",
+        posture: "Citer les résultats réels obtenus pour l'Ensemble Scolaire Sacré-Cœur (48).",
+        points: [
+          "Les stratégies d'achats groupés captent les creux de marché au bénéfice direct des adhérents.",
+          "Accompagnement rigoureux sur la fixation des cours de fourniture."
+        ],
+        proof: "Témoignage de Marc Mathieu (DAF) : baisse contractuelle de 19 % obtenue sur le budget électricité 2026."
+      },
+      {
+        tag: "energie",
+        market: "MARCHÉ : ENERGIC",
+        category: "plateforme digitale centralisée",
+        question: "« Le client te dit : \"Nous avons 15 compteurs d'électricité et de gaz disséminés, le suivi des factures est ingérable.\" Tu réponds quoi ? »",
+        posture: "Déployer la plateforme centralisée lecedre.fr/energic.",
+        points: [
+          "Regroupement de la totalité de vos points de livraison (PDL / PCE) sur une interface unique accessible depuis votre Espace Adhérent.",
+          "Visualisation immédiate des consommations globales et simulation budgétaire automatisée."
+        ],
+        proof: "Outil en ligne dédié ÉnergiC permettant le pilotage multi-compteurs et l'extraction des données."
+      },
+      {
+        tag: "energie",
+        market: "MARCHÉ : ENERGIC",
+        category: "puissance d'achat & alliance cleee",
+        question: "« Le client te dit : \"Un courtier local affirme qu'il obtiendra de meilleurs tarifs qu'un groupement.\" Tu réponds quoi ? »",
+        posture: "Opposer la force de frappe institutionnelle de 1,2 TWh et l'alliance avec les grands consommateurs.",
+        points: [
+          "Le Cèdre ne réalise pas de courtage ponctuel : il achète des blocs d'énergie sur les marchés de gros.",
+          "Membre actif du CLEEE, Le Cèdre pèse aux côtés des plus grands consommateurs industriels et tertiaires français."
+        ],
+        proof: "Alliance CLEEE et puissance d'achat mutualisée de 1,2 TWh."
+      },
+      {
+        tag: "energie",
+        market: "MARCHÉ : ENERGIC",
+        category: "transparence de marge intermédiaire",
+        question: "« Le client te dit : \"Pourquoi passer par Le Cèdre plutôt que de signer en direct chez EDF ou Engie ?\" Tu réponds quoi ? »",
+        posture: "Comparer les marges de risque appliquées aux contrats individuels.",
+        points: [
+          "Les fournisseurs directs appliquent des marges commerciales et de couverture très élevées sur les dossiers isolés.",
+          "L'accord-cadre Cèdre impose une marge fournisseur strictement compressée et transparente."
+        ],
+        proof: "Marge fournisseur négociée de 5 à 10 fois inférieure à celle des courtiers et offres directes du marché."
+      },
+      {
+        tag: "energie",
+        market: "MARCHÉ : ENERGIC",
+        category: "achats échelonnés par tranches",
+        question: "« Le client te dit : \"Comment fixez-vous le bon moment pour signer les contrats de gaz et d'électricité ?\" Tu réponds quoi ? »",
+        posture: "Expliquer la méthode d'achat échelonné dans le temps.",
+        points: [
+          "Pas de pari hasardeux à une date unique : les volumes sont achetés par fractions tout au long de l'année.",
+          "Cette méthode lisse les pointes d'inflation et optimise le coût moyen final."
+        ],
+        proof: "Contrats sécurisés sur 3 ans négociés par achats échelonnés."
+      },
+      {
+        tag: "energie",
+        market: "MARCHÉ : ENERGIC",
+        category: "assistance litiges de facturation",
+        question: "« Le client te dit : \"Si le fournisseur commet des erreurs sur la facture ou la CTA, qui m'aide à contester ?\" Tu réponds quoi ? »",
+        posture: "Valoriser l'intervention de l'équipe support énergie Cèdre.",
+        points: [
+          "Prise en charge directe des contestations d'index, d'erreurs de taxes ou de litiges d'acheminement par nos spécialistes.",
+          "L'adhérent s'affranchit des relances téléphoniques interminables avec les services clients des énergéticiens."
+        ],
+        proof: "Service d'experts Cèdre dédié au règlement des litiges et au contrôle des factures."
+      },
+      {
+        tag: "energie",
+        market: "MARCHÉ : ENERGIC",
+        category: "flexibilité multi-sites & périmètre",
+        question: "« Le client te dit : \"Nous prévoyons de vendre un bâtiment et d'en ouvrir un autre d'ici 18 mois.\" Tu réponds quoi ? »",
+        posture: "Présenter la flexibilité d'entrée et sortie de périmètre négociée dans l'accord.",
+        points: [
+          "L'accord autorise l'ajout ou le retrait de compteurs au fil de la vie du patrimoine sans pénalités abusives d'écart.",
+          "Gestion administrative fluide assurée directement sur la plateforme ÉnergiC."
+        ],
+        proof: "Clauses contractuelles de souplesse d'ajustement du nombre de compteurs."
+      },
+      {
+        tag: "energie",
+        market: "MARCHÉ : ENERGIC",
+        category: "continuité légale enedis grdf",
+        question: "« Le client te dit : \"J'ai peur d'une coupure d'électricité lors du changement d'opérateur.\" Tu réponds quoi ? »",
+        posture: "Rappeler le cadre réglementaire de distribution physique.",
+        points: [
+          "La continuité de distribution est garantie par les gestionnaires de réseaux publics (Enedis pour l'électricité, GRDF pour le gaz).",
+          "Le changement de fournisseur est une bascule purement administrative, sans intervention physique sur le compteur ni risque d'interruption."
+        ],
+        proof: "Bascule 100 % transparente encadrée par la loi sur les réseaux de distribution nationaux."
+      },
+      {
+        tag: "energie",
+        market: "MARCHÉ : ENERGIC",
+        category: "décret tertiaire & données operat",
+        question: "« Le client te dit : \"Nous devons satisfaire aux exigences du Décret Tertiaire, vos offres couvrent-elles ce besoin ?\" Tu réponds quoi ? »",
+        posture: "Présenter l'offre globale d'efficacité énergétique connectée à ÉnergiC.",
+        points: [
+          "Extraction facilitée des historiques de données pour renseigner la plateforme OPERAT.",
+          "Mise en relation avec des diagnostics d'efficacité énergétique pour traquer les déperditions du bâti."
+        ],
+        proof: "Données de consommation centralisées sur l'Espace Adhérent pour faciliter les déclarations réglementaires."
+      },
+
+      // ==========================================
+      // 5. SOLUTIONS D'IMPRESSION (10 cas)
+      // ==========================================
+      {
+        tag: "print",
+        market: "MARCHÉ : SOLUTIONS D'IMPRESSION",
+        category: "rachat cadré à 1 € & fin de bail",
+        question: "« Le client te dit : \"Mon loueur m'impose des frais exorbitants pour reprendre mon copieur en fin de bail.\" Tu réponds quoi ? »",
+        posture: "Présenter le cadre de sortie et de reprise des matériels Cèdre.",
+        points: [
+          "Fin des clauses abusives de restitution et de pénalités de rachat.",
+          "Les accords Cèdre fixent des conditions strictes et transparentes pour clôturer ou prolonger l'usage des copieurs."
+        ],
+        proof: "Rachat de matériel cadré à la valeur symbolique de 1 € et limitation formelle des prolongations de contrat à 3 ans maximum."
+      },
+      {
+        tag: "print",
+        market: "MARCHÉ : SOLUTIONS D'IMPRESSION",
+        category: "coût/page fixe & parité 1 a3 = 1 a4",
+        question: "« Le client te dit : \"Chaque année mon prestataire augmente le coût de la copie sous prétexte d'inflation.\" Tu réponds quoi ? »",
+        posture: "Opposer la règle contractuelle du coût à la page fixe au réel.",
+        points: [
+          "Le tarif unitaire de la page reste rigoureusement fixe pendant toute la durée du contrat de maintenance.",
+          "Facturation basée sur la consommation réelle constatée, sans forfaits minimaux captifs."
+        ],
+        proof: "Tarifs au clic fixes sur toute la durée du contrat et application de la parité stricte : 1 page A3 = 1 page A4 chez les constructeurs référencés."
+      },
+      {
+        tag: "print",
+        market: "MARCHÉ : SOLUTIONS D'IMPRESSION",
+        category: "relecture des contrats & devis adm",
+        question: "« Le client te dit : \"J'ai un devis d'impression sous les yeux, je suis prêt à signer rapidement.\" Tu réponds quoi ? »",
+        posture: "Imposer le passage par le service validation marché pour neutraliser les clauses pièges.",
+        points: [
+          "Les commerciaux des concessionnaires intègrent fréquemment des reconductions tacites ou des indexations masquées.",
+          "Notre service dédié vérifie la conformité de chaque ligne avant tout engagement."
+        ],
+        proof: "Relecture des contrats et devis par le service ADM du Cèdre pour bloquer les fraudes et surcoûts (rappel du cas d'un copieur vendu 49 000 € en direct hors Cèdre)."
+      },
+      {
+        tag: "print",
+        market: "MARCHÉ : SOLUTIONS D'IMPRESSION",
+        category: "tarifs constructeurs sharp & konica",
+        question: "« Le client te dit : \"Le matériel d'impression professionnel de grande marque est inabordable pour notre association.\" Tu réponds quoi ? »",
+        posture: "Présenter les remises massives négociées sur les gammes Sharp et Konica.",
+        points: [
+          "Accès direct aux catalogues constructeurs avec des remises de volume nationales.",
+          "Maintenance de qualité assurée sous délais d'intervention garantis."
+        ],
+        proof: "Remises sur le matériel jusqu'à 70 % chez Konica, Sharp et Toshiba ; délais d'intervention de 8 heures ouvrées maximum. Tarifs maintenance A3 N&B dès 0,0027 € chez Sharp."
+      },
+      {
+        tag: "print",
+        market: "MARCHÉ : SOLUTIONS D'IMPRESSION",
+        category: "impression à froid epson swiller",
+        question: "« Le client te dit : \"Nous cherchons à réduire notre facture d'électricité et notre empreinte carbone sur l'impression.\" Tu réponds quoi ? »",
+        posture: "Orienter vers la technologie d'impression à froid Epson via notre distributeur Swiller.",
+        points: [
+          "La technologie jet d'encre à froid supprime l'étape de chauffe des fours laser, réduisant massivement la consommation électrique.",
+          "Moins de pièces d'usure à renouveler, diminuant les pannes et les déchets conformément aux attentes RSE / CSRD."
+        ],
+        proof: "Matériel Epson remisé jusqu'à 63 % distribué par Swiller, avec des coûts de maintenance N&B dès 0,0032 € en A3."
+      },
+      {
+        tag: "print",
+        market: "MARCHÉ : SOLUTIONS D'IMPRESSION",
+        category: "gestion de flux & badges d'accès",
+        question: "« Le client te dit : \"Tout le monde imprime sans contrôle et des ramettes de papier sont gâchées.\" Tu réponds quoi ? »",
+        posture: "Proposer le déploiement d'une solution de gestion de flux.",
+        points: [
+          "Permet de définir des politiques d'impression responsables (quotas, noir et blanc par défaut, impression sécurisée par badge).",
+          "Suivi nominatif et analytique des coûts par service ou projet."
+        ],
+        proof: "Outils de gestion de flux référencés pour administrer les plafonds d'impression et éliminer les tirages orphelins."
+      },
+      {
+        tag: "print",
+        market: "MARCHÉ : SOLUTIONS D'IMPRESSION",
+        category: "consultation sur mesure csm parcs",
+        question: "« Le client te dit : \"Notre structure comprend 25 copieurs et 80 imprimantes de bureau, votre accord standard est inadapté.\" Tu réponds quoi ? »",
+        posture: "Déclencher la procédure de Consultation Sur Mesure (CSM).",
+        points: [
+          "Au-delà d'un certain seuil d'équipement, nos experts pilotent un audit sur mesure du parc.",
+          "Mise en concurrence directe des constructeurs référencés sur votre cahier des charges spécifique."
+        ],
+        proof: "Déploiement des CSM avec l'appui des assistantes de marché pour élaborer des études économiques détaillées."
+      },
+      {
+        tag: "print",
+        market: "MARCHÉ : SOLUTIONS D'IMPRESSION",
+        category: "cartographie des 4 décideurs",
+        question: "« Comment sécuriser le cycle de vente d'un projet d'impression dans une organisation ? »",
+        posture: "Aligner les 4 parties prenantes identifiées par le chef de marché.",
+        points: [
+          "Les Utilisateurs finaux (ergonomie, fonctionnalités) et Services juridiques (clauses des baux et engagements).",
+          "Les Services financiers (TCO, rentabilité, structure des loyers) et Services informatiques (interconnexion aux réseaux, sécurité des flux)."
+        ],
+        proof: "Méthode d'audit Cèdre intégrant systématiquement les 4 profils de décision."
+      },
+      {
+        tag: "print",
+        market: "MARCHÉ : SOLUTIONS D'IMPRESSION",
+        category: "rattachement direct sharp en cours",
+        question: "« Le client te dit : \"Nous avons déjà des copieurs Sharp récents sous contrat, nous ne pouvons rien faire.\" Tu réponds quoi ? »",
+        posture: "Proposer le basculement direct sur les tarifs de maintenance Cèdre.",
+        points: [
+          "Inutile d'attendre la fin du contrat pour réduire les frais de copie si la marque est déjà référencée.",
+          "Sharp propose le rattachement direct aux conditions du Cèdre pour les nouveaux adhérents."
+        ],
+        proof: "Clause officielle Sharp : possibilité de rattachement direct aux prix de maintenance Cèdre pour les nouveaux adhérents."
+      },
+      {
+        tag: "print",
+        market: "MARCHÉ : SOLUTIONS D'IMPRESSION",
+        category: "parc reconditionné garanti constructeur",
+        question: "« Le client te dit : \"Nous n'avons pas les moyens de financer un parc neuf.\" Tu réponds quoi ? »",
+        posture: "Proposer les gammes de matériels professionnels reconditionnés.",
+        points: [
+          "Machines reconditionnées en usine constructeur avec garanties identiques au matériel neuf.",
+          "Réduction substantielle du loyer mensuel et valorisation de l'empreinte environnementale."
+        ],
+        proof: "Offres de matériels reconditionnés disponibles chez Sharp et Konica avec maintien du délai d'intervention de 8 heures ouvrées."
+      },
+
+      // ==========================================
+      // 6. INFORMATIQUE (10 cas)
+      // ==========================================
+      {
+        tag: "it",
+        market: "MARCHÉ : INFORMATIQUE",
+        category: "phénomène boîte noire chez l'infogéreur",
+        question: "« Le client te dit : \"Notre informaticien local gère tout depuis des années, nous ne comprenons rien à ses factures mais nous lui faisons confiance.\" Tu réponds quoi ? »",
+        posture: "Alerter sur le piège de la dépendance technique et l'opacité financière.",
+        points: [
+          "Trop de structures subissent le phénomène 'boîte noire' avec des coûts flous et des choix technologiques imposés sans transparence.",
+          "Le Cèdre redonne le contrôle à l'adhérent grâce à des prestations d'infogérance auditées et transparentes."
+        ],
+        proof: "30 % à 50 % d'économies constatées et transparence retrouvée suite au déploiement d'un infogéreur référencé Cèdre."
+      },
+      {
+        tag: "it",
+        market: "MARCHÉ : INFORMATIQUE",
+        category: "infogéreurs locaux sélectionnés dsi",
+        question: "« Le client te dit : \"Un groupement national ne peut pas m'apporter la proximité physique nécessaire en cas de panne réseau.\" Tu réponds quoi ? »",
+        posture: "Présenter la méthode de sélection par un comité de pairs experts.",
+        points: [
+          "Le Cèdre ne sous-traite pas à une hotline délocalisée : il référence un réseau d'infogéreurs implantés localement.",
+          "Les prestataires sont audités et validés par un comité d'experts composé de DSI et de responsables informatiques adhérents."
+        ],
+        proof: "Réseau national d'acteurs de proximité sélectionnés par le comité d'adhérents experts du Cèdre."
+      },
+      {
+        tag: "it",
+        market: "MARCHÉ : INFORMATIQUE",
+        category: "matériel professionnel vs grand public",
+        question: "« Le client te dit : \"J'achète mes ordinateurs de bureau en grande surface ou sur Amazon quand il y a des promotions.\" Tu réponds quoi ? »",
+        posture: "Démontrer l'avantage opérationnel et sécuritaire du matériel professionnel.",
+        points: [
+          "Les gammes grand public ne possèdent pas les garanties de robustesse ni les capacités d'administration réseau nécessaires en organisation.",
+          "Les machines professionnelles sont plus durables et mieux armées face aux cybermenaces."
+        ],
+        proof: "Tarifs négociés sur gammes professionnelles HP, Dell, Lenovo et Asus via 2 distributeurs majeurs (JLL & Bechtle)."
+      },
+      {
+        tag: "it",
+        market: "MARCHÉ : INFORMATIQUE",
+        category: "boutique hp en ligne -10% permanent",
+        question: "« Le client te dit : \"Pour acheter deux ou trois ordinateurs par an, les démarches de devis sont trop chronophages.\" Tu réponds quoi ? »",
+        posture: "Déployer l'accès direct et autonome à la boutique HP en ligne.",
+        points: [
+          "Commande directe et rapide sur le catalogue professionnel HP sans passer par une consultation.",
+          "Réductions permanentes applicables dès le premier matériel pour la structure et ses collaborateurs."
+        ],
+        proof: "Au moins 10 % de remise immédiate garantie sur la boutique HP en ligne."
+      },
+      {
+        tag: "it",
+        market: "MARCHÉ : INFORMATIQUE",
+        category: "reconditionné professionnel à -50%",
+        question: "« Le client te dit : \"Notre budget d'investissement informatique est bloqué pour l'année à venir.\" Tu réponds quoi ? »",
+        posture: "Proposer le renouvellement par du matériel informatique pro reconditionné.",
+        points: [
+          "Permet de renouveler les postes de travail avec des configurations professionnelles robustes à moindre coût.",
+          "S'inscrit directement dans la démarche de sobriété numérique et RSE."
+        ],
+        proof: "Jusqu'à 50 % d'économie constatée sur les gammes de matériels professionnels reconditionnés."
+      },
+      {
+        tag: "it",
+        market: "MARCHÉ : INFORMATIQUE",
+        category: "achats groupés volume de rentrée",
+        question: "« Le client te dit : \"Nous devons remplacer 80 ordinateurs portables pour la rentrée prochaine.\" Tu réponds quoi ? »",
+        posture: "Déclencher un projet d'achat groupé de volume.",
+        points: [
+          "L'équipe marché organise une consultation spécifique pour mettre en concurrence directe les distributeurs.",
+          "Le volume permet d'obtenir des conditions tarifaires encore plus avantageuses que les mercuriales courantes."
+        ],
+        proof: "Remises quantitatives spécifiques négociées au-delà des tarifs de base grâce aux achats groupés Cèdre."
+      },
+      {
+        tag: "it",
+        market: "MARCHÉ : INFORMATIQUE",
+        category: "cybersécurité & protection asso",
+        question: "« Le client te dit : \"Nous sommes une association, nous ne risquons rien face aux pirates informatiques.\" Tu réponds quoi ? »",
+        posture: "Relayer l'alerte du chef de marché sur la vulnérabilité des structures collectives.",
+        points: [
+          "En ces temps de menaces cyber accrues, les associations et établissements d'enseignement sont des cibles privilégiées car souvent sous-protégées.",
+          "Les adhérents doivent impérativement reprendre le contrôle de leur informatique avec un encadrement professionnel rigoureux."
+        ],
+        proof: "Sélection obligatoire des infogéreurs sur leur capacité démontrée à sécuriser les parcs et administrer les accès."
+      },
+      {
+        tag: "it",
+        market: "MARCHÉ : INFORMATIQUE",
+        category: "communauté des pairs dsi",
+        question: "« Le client te dit : \"Notre responsable informatique se sent seul pour faire des choix d'architecture technique.\" Tu réponds quoi ? »",
+        posture: "L'inviter à intégrer la communauté des DSI adhérents du Cèdre.",
+        points: [
+          "Échanges de bonnes pratiques entre pairs issus d'établissements similaires.",
+          "Participation à l'évaluation des prestataires et à la définition des besoins de marché."
+        ],
+        proof: "Groupe de réflexion DSI Cèdre actif pour guider les décisions technologiques et tester les solutions."
+      },
+      {
+        tag: "it",
+        market: "MARCHÉ : INFORMATIQUE",
+        category: "transparence des taux d'infogérance",
+        question: "« Le client te dit : \"Chaque intervention de notre technicien se solde par une surfacturation imprévue.\" Tu réponds quoi ? »",
+        posture: "Présenter la grille horaire et le périmètre contractuel strict Cèdre.",
+        points: [
+          "Fin des devis de dépannage arbitraires : les tarifs horaires et forfaits d'intervention sont pré-négociés et contractualisés.",
+          "Les comptes-rendus d'intervention détaillent précisément le temps passé et les actions réalisées."
+        ],
+        proof: "Cadre contractuel imposant une clarté totale sur les coûts et les méthodes d'infogérance."
+      },
+      {
+        tag: "it",
+        market: "MARCHÉ : INFORMATIQUE",
+        category: "neutralité d'achat désintéressée",
+        question: "« Le client te dit : \"Vous travaillez avec des distributeurs, vous allez me pousser à la surconsommation de licences.\" Tu réponds quoi ? »",
+        posture: "Réaffirmer le statut de groupement au service exclusif de l'adhérent.",
+        points: [
+          "Le Cèdre n'est pas revendeur informatique : notre rôle est d'optimiser le besoin strict et d'éviter les dépenses superflues.",
+          "Les adhérents experts participent directement aux comités pour garantir la neutralité des recommandations."
+        ],
+        proof: "Gouvernance d'achat désintéressée pilotée avec l'aide des adhérents eux-mêmes."
+      },
+
+      // ==========================================
+      // 7. PRODUITS D'ENTRETIEN (10 cas)
+      // ==========================================
+      {
+        tag: "hyg",
+        market: "MARCHÉ : PRODUITS D'ENTRETIEN",
+        category: "sortie définitive de la javel",
+        question: "« Le client te dit : \"Rien ne nettoie mieux que l'eau de Javel, c'est ce que nous achetons par palettes.\" Tu réponds quoi ? »",
+        posture: "Présenter le choix écologique et sanitaire engagé du Cèdre depuis mars 2024.",
+        points: [
+          "Le Cèdre a exclu l'eau de Javel de ses mercuriales en raison de sa toxicité pour le personnel (risques respiratoires, brûlures) et de son impact sur l'environnement.",
+          "Remplacement par des produits enzymatiques, biosurfactants, probiotiques ou labellisés Ecocert/Ecolabel d'efficacité équivalente ou supérieure."
+        ],
+        proof: "Dé-référencement total de la Javel au 01/03/2024 et substitution par les gammes Actionpin, HTS Bio et gammes labellisées."
+      },
+      {
+        tag: "hyg",
+        market: "MARCHÉ : PRODUITS D'ENTRETIEN",
+        category: "tarifs écologiques négociés",
+        question: "« Le client te dit : \"Les produits d'entretien écologiques sont un luxe inaccessible pour notre budget.\" Tu réponds quoi ? »",
+        posture: "Démontrer la compétitivité tarifaire de la gamme écologique Cèdre.",
+        points: [
+          "Les négociations de volume sur le mini-catalogue rendent les produits écologiques moins chers que les produits conventionnels du commerce.",
+          "Accès à des produits professionnels concentrés réduisant le coût à l'usage."
+        ],
+        proof: "Exemples officiels : Liquide vaisselle Ecolabel 1L à 2,14 € HT (-39 % vs 3,48 € HT public) ; Gel WC Ecocert 750ml à 2,90 € HT (-53 % vs 6,18 € HT public)."
+      },
+      {
+        tag: "hyg",
+        market: "MARCHÉ : PRODUITS D'ENTRETIEN",
+        category: "centrale de dilution gratuite",
+        question: "« Le client te dit : \"Nos agents surdosent systématiquement et nos poubelles débordent de bidons vides.\" Tu réponds quoi ? »",
+        posture: "Proposer l'installation de la centrale de dilution offerte par le fournisseur.",
+        points: [
+          "Prépare le produit au juste dosage sans manipulation directe du produit pur par le personnel.",
+          "Réduit massivement le stockage, les manipulations lourdes et le volume de déchets."
+        ],
+        proof: "Mise à disposition gratuite de la centrale : réduction de 75 % des coûts de transport/stockage et baisse de 95 % des déchets plastiques."
+      },
+      {
+        tag: "hyg",
+        market: "MARCHÉ : PRODUITS D'ENTRETIEN",
+        category: "pré-imprégnation & ergonomie soignants",
+        question: "« Le client te dit : \"L'essorage répété des franges et le port des seaux d'eau épuisent mes agents d'entretien.\" Tu réponds quoi ? »",
+        posture: "Prescrire le basculement vers la méthode de pré-imprégnation.",
+        points: [
+          "Préparation préalable des microfibres avec la juste quantité de liquide dans des bacs hermétiques.",
+          "Fin du transport de seaux d'eau sale et suppression totale du geste contraignant d'essorage."
+        ],
+        proof: "Économie de 14 litres d'eau par chariot, fin des tensions musculaires et microfibres lavables jusqu'à 1 000 cycles (5 ans de longévité)."
+      },
+      {
+        tag: "hyg",
+        market: "MARCHÉ : PRODUITS D'ENTRETIEN",
+        category: "nettoyage vapeur & punaises de lit",
+        question: "« Le client te dit : \"Nous avons des infestations régulières de nuisibles et des sols poreux encrassés.\" Tu réponds quoi ? »",
+        posture: "Proposer la technologie vapeur sans chimie.",
+        points: [
+          "La vapeur haute température assure une désinfection totale et détruit les punaises de lit à tous les stades de développement.",
+          "Remet en état les carrelages et sols thermoplastiques sans agression chimique."
+        ],
+        proof: "Retour d'expérience de l'Association Montcalm : éradication complète des punaises de lit et désencrassement des sols avec rentabilité immédiate par arrêt d'achat de produits biocides."
+      },
+      {
+        tag: "hyg",
+        market: "MARCHÉ : PRODUITS D'ENTRETIEN",
+        category: "formation sur site par le fournisseur",
+        question: "« Le client te dit : \"Mes agents ne lisent pas les protocoles d'hygiène et les fiches de sécurité.\" Tu réponds quoi ? »",
+        posture: "Activer le plan de formation terrain dispensé par le fournisseur référencé.",
+        points: [
+          "Les distributeurs s'engagent contractuellement à venir former les agents sur place aux bonnes pratiques de dosage et de sécurité.",
+          "Affichage de plans de nettoyage visuels et personnalisés dans chaque local technique."
+        ],
+        proof: "Formations aux gestes, postures et règles de dilution incluses sans supplément dans l'accord-cadre."
+      },
+      {
+        tag: "hyg",
+        market: "MARCHÉ : PRODUITS D'ENTRETIEN",
+        category: "mini-catalogue en 4 qualités",
+        question: "« Le client te dit : \"Les catalogues d'hygiène contiennent 10 000 références, c'est impossible de s'y retrouver.\" Tu réponds quoi ? »",
+        posture: "Présenter la segmentation lisible du mini-catalogue Cèdre.",
+        points: [
+          "Le mini-catalogue isole les 20 % de références qui couvrent 80 % des besoins quotidiens.",
+          "Sélection organisée en 4 paliers : Premium, Standard, 1er Prix et Écologique."
+        ],
+        proof: "Négociation ligne à ligne des indispensables du panier pour sécuriser les prix sur les produits les plus consommés."
+      },
+      {
+        tag: "hyg",
+        market: "MARCHÉ : PRODUITS D'ENTRETIEN",
+        category: "répartition type du panier hygiène",
+        question: "« Quels sont les postes de dépense majeurs à auditer dans un budget produits d'entretien ? »",
+        posture: "Restituer la décomposition du panier selon la fiche marché M1.",
+        points: [
+          "La Chimie et la Ouate absorbent à elles seules 70 % des dépenses globales d'hygiène.",
+          "Permet d'orienter immédiatement le comparatif sur les gisements d'économies majeurs."
+        ],
+        proof: "Répartition officielle Cèdre : Chimie (35 %), Ouate (35 %), Sacs poubelles (10 %), Matériel de nettoyage (5 %), EPI (5 %), Restauration/Hôtellerie (5 %), Hygiène corporelle (4 %), Matériel électrique (1 %)."
+      },
+      {
+        tag: "hyg",
+        market: "MARCHÉ : PRODUITS D'ENTRETIEN",
+        category: "fournisseurs intégrés vs indépendants",
+        question: "« Comment s'articule le référencement des distributeurs d'hygiène au Cèdre ? »",
+        posture: "Expliquer la complémentarité entre groupes intégrés et réseaux régionaux.",
+        points: [
+          "Entreprises intégrées (COLDIS en VPC, PLG, ORAPI) : interlocuteur unique national et homogénéité des références.",
+          "Réseaux de distributeurs indépendants (GEH, HEDIS, HEEGEO, ADISCO) : implantation territoriale fine et flexibilité locale."
+        ],
+        proof: "10 fournisseurs majeurs référencés avec indices tarifaires et notes RSE auditées."
+      },
+      {
+        tag: "hyg",
+        market: "MARCHÉ : PRODUITS D'ENTRETIEN",
+        category: "audit de nettoyage gratuit garanti",
+        question: "« Le client te dit : \"Nous nettoyons comme cela depuis 20 ans, je ne vois pas ce qu'on pourrait améliorer.\" Tu réponds quoi ? »",
+        posture: "Déclencher un audit de nettoyage gratuit sur site.",
+        points: [
+          "Les distributeurs mandatés réalisent un diagnostic visuel et technique complet des locaux.",
+          "Remise d'un rapport détaillé identifiant les non-conformités, les surdosages et les axes d'amélioration ergonomique."
+        ],
+        proof: "Audit de nettoyage gratuit contractuellement garanti par les fournisseurs référencés."
+      },
+
+      // ==========================================
+      // 8. SOLUTIONS DE DÉMATARIALISATION (10 cas)
+      // ==========================================
+      {
+        tag: "demat",
+        market: "MARCHÉ : SOLUTIONS DE DÉMATARIALISATION",
+        category: "dématérialisation vs simple numérisation",
+        question: "« Le client te dit : \"Nous dématérialisons déjà tout : nous scannons nos factures papier pour les classer dans un dossier PDF sur le serveur.\" Tu réponds quoi ? »",
+        posture: "Rappeler la distinction légale entre copie scannée et original numérique authentifié.",
+        points: [
+          "Scanner un papier ne crée qu'une copie numérique dépourvue de valeur probante autonome.",
+          "La dématérialisation génère ou intègre un document nativement numérique scellé par signature, cachet serveur ou horodatage électronique certifié."
+        ],
+        proof: "La solution de dématérialisation confère au fichier numérique la valeur juridique d'un original et permet la destruction légale du papier."
+      },
+      {
+        tag: "demat",
+        market: "MARCHÉ : SOLUTIONS DE DÉMATARIALISATION",
+        category: "arbre décisionnel assujettissement tva",
+        question: "« Une école ou une association nous dit : \"Nous sommes exonérés de TVA, la réforme de la facturation électronique ne nous concerne pas.\" Tu réponds quoi ? »",
+        posture: "Dérouler l'arbre réglementaire de la réforme fiscale.",
+        points: [
+          "Même non-assujetti ou exonéré de TVA, tout organisme devra impérativement être en mesure de recevoir des factures au format électronique normé de la part de ses fournisseurs.",
+          "Les assujettis devront quant à eux émettre et recevoir via des plateformes agréées."
+        ],
+        proof: "Calendrier légal de la réforme : obligation générale de réception pour l'ensemble des acteurs fixée à septembre 2026."
+      },
+      {
+        tag: "demat",
+        market: "MARCHÉ : SOLUTIONS DE DÉMATARIALISATION",
+        category: "facturation pure vs ged globale",
+        question: "« Le client te dit : \"Comment choisir entre vos partenaires de dématérialisation ?\" Tu réponds quoi ? »",
+        posture: "Segmenter l'offre selon le périmètre documentaire de la structure.",
+        points: [
+          "Si le besoin est strictement limité à l'envoi et la réception de factures électroniques : orientation vers Quadient ou Maileva (solutions clés en main, sans abonnement lourd, facturation à l'usage).",
+          "Si le besoin s'étend aux bulletins de paie, aux contrats et aux dossiers administratifs : orientation vers les solutions GED des constructeurs (Toshiba, Sharp, Konica)."
+        ],
+        proof: "Deux approches référencées : modules factures légères à la consommation vs GED transversale d'entreprise."
+      },
+      {
+        tag: "demat",
+        market: "MARCHÉ : SOLUTIONS DE DÉMATARIALISATION",
+        category: "utilité ged vs obligation stricte",
+        question: "« Le client te dit : \"Est-il obligatoire d'installer une GED pour être en conformité avec la facture électronique ?\" Tu réponds quoi ? »",
+        posture: "Clarifier le besoin fonctionnel strict sans forcer la vente.",
+        points: [
+          "Une GED n'est pas obligatoire pour traiter uniquement des factures réglementaires.",
+          "La GED devient pertinente dès lors que la structure souhaite indexer, faire signer et archiver d'autres flux (bulletins de paie RH, contrats, dossiers bénéficiaires)."
+        ],
+        proof: "Conseil objectif Cèdre : ajustement de la solution technique au périmètre réel sans empilement logiciel inutile."
+      },
+      {
+        tag: "demat",
+        market: "MARCHÉ : SOLUTIONS DE DÉMATARIALISATION",
+        category: "échéance officielle septembre 2026",
+        question: "« Le client te dit : \"La facturation électronique est sans cesse reportée par l'État, nous avons le temps de voir venir.\" Tu réponds quoi ? »",
+        posture: "Alerter sur l'urgence d'anticiper l'échéance de rentrée 2026.",
+        points: [
+          "Le calendrier définitif est fixé par la loi de finances : l'obligation d'être prêt en réception s'impose à tous dès septembre 2026.",
+          "Adapter ses outils comptables et former ses équipes requiert plusieurs mois de préparation technique."
+        ],
+        proof: "Échéance réglementaire nationale arrêtée à septembre 2026."
+      },
+      {
+        tag: "demat",
+        market: "MARCHÉ : SOLUTIONS DE DÉMATARIALISATION",
+        category: "facturation à l'usage sans abonnement",
+        question: "« Une petite structure associative craint de payer des licences logicielles mensuelles exorbitantes pour quelques dizaines de factures. Tu réponds quoi ? »",
+        posture: "Proposer le modèle de tarification à l'usage sans engagement fixe.",
+        points: [
+          "Pas de forfait minimum pénalisant pour les petits volumes.",
+          "Les offres Maileva et Quadient facturent uniquement au nombre réel de plis et factures dématérialisés."
+        ],
+        proof: "Formules sans coût d'abonnement fixe réservées aux faibles volumétries de facturation."
+      },
+      {
+        tag: "demat",
+        market: "MARCHÉ : SOLUTIONS DE DÉMATARIALISATION",
+        category: "authenticité horodatage & cachet",
+        question: "« Le client te dit : \"Comment le fisc s'assure-t-il qu'une facture numérique n'a pas été modifiée après émission ?\" Tu réponds quoi ? »",
+        posture: "Expliquer les mécanismes de scellement électronique.",
+        points: [
+          "Le logiciel applique un certificat électronique, un cachet serveur qualifié ou un horodatage infalsifiable à la génération du fichier.",
+          "Toute altération ultérieure brise le scellé cryptographique et invalide le document lors des contrôles."
+        ],
+        proof: "Conformité aux exigences de la DGFiP sur l'intégrité et la traçabilité des pistes d'audit fiables."
+      },
+      {
+        tag: "demat",
+        market: "MARCHÉ : SOLUTIONS DE DÉMATARIALISATION",
+        category: "rh bulletins paie & coffre-fort",
+        question: "« Le client te dit : \"Nous perdons un temps infini à imprimer et poster les fiches de paie des collaborateurs.\" Tu réponds quoi ? »",
+        posture: "Élargir l'usage du portail de dématérialisation aux ressources humaines.",
+        points: [
+          "Dépôt automatisé des bulletins dans des coffres-forts numériques personnels sécurisés pour chaque salarié.",
+          "Économie immédiate sur l'affranchissement, le papier, la mise sous pli et suppression des risques d'égarement postal."
+        ],
+        proof: "Intégration possible des modules RH et coffre-fort numérique dans les solutions proposées par Toshiba, Sharp et Konica."
+      },
+      {
+        tag: "demat",
+        market: "MARCHÉ : SOLUTIONS DE DÉMATARIALISATION",
+        category: "portail ppf vs plateformes pdp",
+        question: "« Le client te dit : \"Quel est le rôle du portail public de l'État par rapport aux prestataires privés ?\" Tu réponds quoi ? »",
+        posture: "Expliquer l'architecture de transmission fiscale.",
+        points: [
+          "Le Portail Public de Facturation (PPF) centralise les flux et déclarations fiscales pour le compte de l'État.",
+          "Nos partenaires s'interfacent avec les plateformes de dématérialisation agréées pour automatiser la transmission sans saisie manuelle."
+        ],
+        proof: "Solutions Cèdre compatibles avec les protocoles d'échange officiels de la réforme 2026."
+      },
+      {
+        tag: "demat",
+        market: "MARCHÉ : SOLUTIONS DE DÉMATARIALISATION",
+        category: "cadrage maturité numérique",
+        question: "« Quelles questions poser pour qualifier la maturité numérique d'un établissement ? »",
+        posture: "Cartographier les volumes et la typologie des pièces comptables.",
+        points: [
+          "Quel est le volume mensuel de factures émises et reçues ?",
+          "Quel logiciel comptable est utilisé et la structure est-elle assujettie à la TVA ?",
+          "Souhaitez-vous dématérialiser d'autres documents (RH, contrats, commandes) ?"
+        ],
+        proof: "Diagnostic de cadrage Cèdre orientant d'emblée vers l'outil adapté (facturation pure vs GED complète)."
+      },
+
+      // ==========================================
+      // 9. VÉRIFICATIONS RÈGLEMENTAIRES (10 cas)
+      // ==========================================
+      {
+        tag: "vr",
+        market: "MARCHÉ : VÉRIFICATIONS RÈGLEMENTAIRES",
+        category: "maire, état & commission de sécurité",
+        question: "« Le client te dit : \"Je gère la sécurité comme je veux, c'est mon bâtiment privé.\" Tu réponds quoi ? »",
+        posture: "Rappeler la réglementation s'appliquant aux Établissements Recevant du Public (ERP).",
+        points: [
+          "La sécurité des personnes relève du pouvoir de police de l'État délégué aux préfets et aux maires.",
+          "Un ERP est un lieu privé accessible au public dont l'ouverture dépend de l'autorisation de la mairie, sur avis conforme de la commission de sécurité."
+        ],
+        proof: "Obligation légale d'obtention de l'avis favorable de la commission de sécurité pour exploiter un ERP."
+      },
+      {
+        tag: "vr",
+        market: "MARCHÉ : VÉRIFICATIONS RÈGLEMENTAIRES",
+        category: "déchéance d'assurance & absence q19",
+        question: "« Le client te dit : \"Les contrôles quinquennaux sont une dépense superflue, nous les reportons.\" Tu réponds quoi ? »",
+        posture: "Alerter sur la nullité de couverture en cas de sinistre grave.",
+        points: [
+          "L'assureur exige la transmission régulière des rapports de contrôle (dont le Q19 pour la thermographie infrarouge).",
+          "En cas d'incendie sans contrôle à jour, la garantie financière est déchue et la responsabilité civile et pénale du dirigeant est engagée."
+        ],
+        proof: "Risque formel de non-indemnisation par les compagnies d'assurances en cas d'absence des attestations réglementaires."
+      },
+      {
+        tag: "vr",
+        market: "MARCHÉ : VÉRIFICATIONS RÈGLEMENTAIRES",
+        category: "tarifs bordereau électrique q18 & gaz",
+        question: "« Quels prix repères donner sur les vérifications périodiques courantes pour prouver la compétitivité du Cèdre ? »",
+        posture: "Sortir les prix bordereau négociés par superficie et tranche.",
+        points: [
+          "Les vérifications d'installations électriques sont faciles à comparer sur devis d'après la superficie du bâtiment.",
+          "Tarifs négociés : Électrique Q18 scolaire 2 001 à 3 000 m² dès 292,40 € HT chez Dekra (ou 365 € HT chez Socotec vs 895 € HT public).",
+          "Contrôle annuel Gaz dès 11,00 € à 17,03 € par appareil de cuisson chez Socotec et BV (vs 100 € HT tarif standard)."
+        ],
+        proof: "Économie moyenne constatée sur 12 mois : 42,9 % sur les contrôles obligatoires."
+      },
+      {
+        tag: "vr",
+        market: "MARCHÉ : VÉRIFICATIONS RÈGLEMENTAIRES",
+        category: "chasse aux doublons de maintenance",
+        question: "« Le client te dit : \"Nous payons déjà un bureau de contrôle pour vérifier nos extincteurs et portes automatiques.\" Tu réponds quoi ? »",
+        posture: "Dénoncer les doublons entre contrats de maintenance et contrôles périodiques.",
+        points: [
+          "Certaines vérifications sont déjà incluses dans les contrats de maintenance des installateurs (extincteurs annuels, portes automatiques semestrielles).",
+          "Les payer en plus à un bureau de contrôle constitue une dépense inutile."
+        ],
+        proof: "Suppression systématique des prestations redondantes lors de l'audit comparatif Cèdre."
+      },
+      {
+        tag: "vr",
+        market: "MARCHÉ : VÉRIFICATIONS RÈGLEMENTAIRES",
+        category: "synergie quatuor gagnant bâtiment",
+        question: "« Le client te dit : \"Je ne souhaite négocier que la vérification de mes disjoncteurs électriques.\" Tu réponds quoi ? »",
+        posture: "Élargir la négociation au Quatuor Gagnant du Bâtiment.",
+        points: [
+          "Les vérifications réglementaires sont le point d'entrée pour rationaliser toute la sécurité technique des bâtiments.",
+          "Les synergies entre ces marchés amplifient les remises et déchargent les équipes techniques."
+        ],
+        proof: "Synergie Quatuor Bâtiment Cèdre : Vérifications Réglementaires (VR) / Ascenseurs / Protection Incendie / Systèmes de Sécurité Incendie (SSI)."
+      },
+      {
+        tag: "vr",
+        market: "MARCHÉ : VÉRIFICATIONS RÈGLEMENTAIRES",
+        category: "projets ctc & csps sur chantiers",
+        question: "« Le client te dit : \"Nous construisons une extension, le choix du bureau de contrôle est réservé à notre architecte.\" Tu réponds quoi ? »",
+        posture: "Rappeler la liberté de choix du maître d'ouvrage sur le Contrôle Technique de Construction (CTC) et la sécurité chantier (CSPS).",
+        points: [
+          "L'intervention du CTC ou du CSPS ne doit pas être imposée sans mise en concurrence financière.",
+          "Le Cèdre référence des spécialistes compétitifs pour sécuriser les travaux sans ralentir le calendrier du chantier."
+        ],
+        proof: "Fournisseurs spécialisés CTC/CSPS référencés (dont Contrôle G, indice 100 de la construction sur l'Île-de-France et les Hauts-de-France)."
+      },
+      {
+        tag: "vr",
+        market: "MARCHÉ : VÉRIFICATIONS RÈGLEMENTAIRES",
+        category: "plateformes en ligne & levée réserves",
+        question: "« Le client te dit : \"Les rapports d'inspection papier s'empilent dans des classeurs et personne ne suit la levée des anomalies.\" Tu réponds quoi ? »",
+        posture: "Valoriser les outils digitaux clients inclus dans le contrat-cadre.",
+        points: [
+          "Tous les bureaux référencés fournissent un espace client en ligne pour suivre l'avancement des visites et l'historique des contrôles.",
+          "Les anomalies sont répertoriées pour planifier les levées de réserves et préparer sereinement la commission de sécurité."
+        ],
+        proof: "Espace client digital obligatoire chez l'ensemble des prestataires du référencement Cèdre."
+      },
+      {
+        tag: "vr",
+        market: "MARCHÉ : VÉRIFICATIONS RÈGLEMENTAIRES",
+        category: "formations certifiées qualiopi",
+        question: "« Le client te dit : \"Nous devons renouveler les habilitations électriques et le SST de nos techniciens.\" Tu réponds quoi ? »",
+        posture: "Activer l'offre de formation certifiée proposée par nos organismes de contrôle.",
+        points: [
+          "Les bureaux de contrôle référencés dispensent l'ensemble des modules de formation obligatoire à la sécurité.",
+          "Les sessions sont certifiées Qualiopi, permettant leur prise en charge par les fonds de formation."
+        ],
+        proof: "Certifications Qualiopi, ISO 9001 et évaluations ESSMS intégrées au nouveau référencement."
+      },
+      {
+        tag: "vr",
+        market: "MARCHÉ : VÉRIFICATIONS RÈGLEMENTAIRES",
+        category: "notation rse via plateforme zei",
+        question: "« Le client te dit : \"Nous voulons sélectionner un bureau de contrôle exemplaire sur le plan environnemental.\" Tu réponds quoi ? »",
+        posture: "Utiliser la notation ZEI pour guider le choix de l'adhérent.",
+        points: [
+          "Le Cèdre évalue la responsabilité sociale et l'impact carbone des prestataires grâce à la plateforme ZEI.",
+          "L'adhérent peut arbitrer entre prix, couverture géographique et performance RSE."
+        ],
+        proof: "Notation d'impact ZEI disponible pour chaque bureau de contrôle référencé."
+      },
+      {
+        tag: "vr",
+        market: "MARCHÉ : VÉRIFICATIONS RÈGLEMENTAIRES",
+        category: "guichet unique & 2 assistantes dédiées",
+        question: "« Le client te dit : \"Quand j'appelle un grand bureau de contrôle, je passe d'agence en agence sans obtenir de réponse.\" Tu réponds quoi ? »",
+        posture: "Mettre en avant le guichet unique de l'équipe Bâtiment Cèdre.",
+        points: [
+          "Deux assistantes spécialisées au siège gèrent les demandes, relancent les agences et vérifient l'application des tarifs bordereau.",
+          "Accélération du traitement des devis et prise en charge directe des blocages administratifs."
+        ],
+        proof: "Deux assistantes dédiées et une adresse email unique pour raccourcir les délais de réponse."
+      },
+
+      // ==========================================
+      // 10. SOCIÉTÉS DE NETTOYAGE (SDN) (10 cas)
+      // ==========================================
+      {
+        tag: "sdn",
+        market: "MARCHÉ : SOCIÉTÉS DE NETTOYAGE (SDN)",
+        category: "les 5 déclencheurs de questionnement",
+        question: "« Quels sont les critères à vérifier pour détecter si un contrat de nettoyage mérite d'être renégocié ? »",
+        posture: "Activer la grille des 5 situations cibles du marché SDN.",
+        points: [
+          "1. Contrat signé depuis plus de 3 ans.",
+          "2. Échéance contractuelle arrivant en 2026 ou 2027.",
+          "3. Doutes sur la rentabilité ou le rapport qualité/prix de la prestation.",
+          "4. Insatisfaction sur la qualité d'exécution (saleté résiduelle).",
+          "5. Insatisfaction sur le suivi de chantier ou l'encadrement des agents."
+        ],
+        proof: "Diagnostic de découverte ciblant les 5 irritants majeurs du nettoyage externalisé."
+      },
+      {
+        tag: "sdn",
+        market: "MARCHÉ : SOCIÉTÉS DE NETTOYAGE (SDN)",
+        category: "seuils officiels mer vs aosm",
+        question: "« Comment s'organise l'accompagnement Cèdre selon le volume financier du contrat de nettoyage ? »",
+        posture: "Appliquer rigoureusement les trois tranches budgétaires officielles.",
+        points: [
+          "Budget < 30 000 € : procédure de Mise en Relation (MER) directe avec les prestataires sans Frais d'Adhésion supplémentaires.",
+          "Budget entre 30 000 € et 70 000 € : procédure d'Appel d'Offres Sur Mesure (AOSM) pilotée à distance par les équipes marché.",
+          "Budget > 70 000 € : procédure d'AOSM complète avec visite technique sur site et soutenance."
+        ],
+        proof: "Cadre d'intervention officiel par seuils : < 30 k€ (MER), 30 à 70 k€ (AOSM à distance), > 70 k€ (AOSM sur site)."
+      },
+      {
+        tag: "sdn",
+        market: "MARCHÉ : SOCIÉTÉS DE NETTOYAGE (SDN)",
+        category: "modèle financier sans rfa & fa dégressifs",
+        question: "« Le client te dit : \"Quel est le pourcentage de RFA que vous me reversez sur mon contrat de société de nettoyage ?\" Tu réponds quoi ? »",
+        posture: "Énoncer en toute transparence la règle financière propre au marché SDN.",
+        points: [
+          "Il n'y a pas de RFA reversée sur le marché des Sociétés de Nettoyage en raison des contraintes de marges de main d'œuvre du secteur.",
+          "La rémunération du Cèdre repose sur des Frais d'Adhésion (FA) transparents et dégressifs selon le volume d'affaires."
+        ],
+        proof: "Modèle financier officiel : 0 % de RFA et Frais d'Adhésion dégressifs échelonnés de 1 % à 4 % du chiffre d'affaires traité."
+      },
+      {
+        tag: "sdn",
+        market: "MARCHÉ : SOCIÉTÉS DE NETTOYAGE (SDN)",
+        category: "contrat en cdi & préavis de 3 mois",
+        question: "« Le client te dit : \"Si nous changeons d'entreprise de nettoyage, nous allons nous retrouver enfermés dans un engagement rigide.\" Tu réponds quoi ? »",
+        posture: "Rassurer sur la flexibilité contractuelle garantie par Le Cèdre.",
+        points: [
+          "Le contrat conclu avec l'entreprise de nettoyage référencée est un contrat à durée indéterminée (CDI).",
+          "L'adhérent peut résilier facilement si le cahier des charges n'est pas respecté."
+        ],
+        proof: "Contrat en CDI souple avec préavis de sortie fixé à 3 mois."
+      },
+      {
+        tag: "sdn",
+        market: "MARCHÉ : SOCIÉTÉS DE NETTOYAGE (SDN)",
+        category: "reprise obligatoire personnel annexe 7",
+        question: "« Le client te dit : \"Si je change de prestataire de nettoyage, je veux absolument garder les deux agents qui travaillent chez nous depuis 10 ans.\" Tu réponds quoi ? »",
+        posture: "Expliquer l'application légale de l'Annexe 7 de la Convention Collective Nationale de la Propreté.",
+        points: [
+          "Le changement d'entreprise n'entraîne pas le licenciement du personnel de ménage affecté au site.",
+          "Le nouveau prestataire retenu a l'obligation légale de reprendre les contrats de travail et l'ancienneté des agents en poste."
+        ],
+        proof: "Transfert de personnel garanti par les règles de la convention collective de la propreté."
+      },
+      {
+        tag: "sdn",
+        market: "MARCHÉ : SOCIÉTÉS DE NETTOYAGE (SDN)",
+        category: "cahier des charges zoné au m²",
+        question: "« Le client te dit : \"Le prestataire actuel facture des forfaits au mètre carré sans tenir compte de nos spécificités.\" Tu réponds quoi ? »",
+        posture: "Structurer la consultation par zones de criticité sanitaire.",
+        points: [
+          "L'accompagnement Cèdre formalise les fréquences et protocoles par typologie de pièces (sanitaires, bureaux, couloirs, classes, réfectoires).",
+          "Les prestataires répondent sur des temps d'intervention précis et des cadences réalistes."
+        ],
+        proof: "Rédaction d'un cahier des charges sur mesure évitant les sous-évaluations horaires."
+      },
+      {
+        tag: "sdn",
+        market: "MARCHÉ : SOCIÉTÉS DE NETTOYAGE (SDN)",
+        category: "audits qualité contradictoires",
+        question: "« Le client te dit : \"Le superviseur de nettoyage ne vient jamais vérifier le travail de ses agents.\" Tu réponds quoi ? »",
+        posture: "Contractualiser des audits qualité périodiques contradictoires.",
+        points: [
+          "Nos accords imposent des visites d'encadrement régulières menées conjointement par le responsable de secteur et le client.",
+          "Les grilles d'évaluation consignent les écarts et déclenchent des actions correctives immédiates."
+        ],
+        proof: "Clause de suivi qualité obligatoire avec fiches d'évaluation contradictoires."
+      },
+      {
+        tag: "sdn",
+        market: "MARCHÉ : SOCIÉTÉS DE NETTOYAGE (SDN)",
+        category: "lutte travail dissimulé & urssaf",
+        question: "« Le client te dit : \"J'ai trouvé une petite société de nettoyage 30 % moins chère que tout le monde sur internet.\" Tu réponds quoi ? »",
+        posture: "Alerter sur la responsabilité solidaire du donneur d'ordre en cas de travail dissimulé.",
+        points: [
+          "Les prix anormalement bas dans la propreté cachent souvent des fraudes aux cotisations sociales ou des infractions au salaire minimum.",
+          "Le Cèdre audite systématiquement les attestations URSSAF, fiscales et d'assurance des entreprises avant tout référencement."
+        ],
+        proof: "Vérification des obligations de vigilance légale assurée par Le Cèdre pour protéger la responsabilité pénale du dirigeant."
+      },
+      {
+        tag: "sdn",
+        market: "MARCHÉ : SOCIÉTÉS DE NETTOYAGE (SDN)",
+        category: "consommables & synergie hygiène",
+        question: "« Le client te dit : \"L'entreprise de nettoyage nous facture les sacs poubelles et le papier toilette à des tarifs exorbitants.\" Tu réponds quoi ? »",
+        posture: "Dissocier ou encadrer la fourniture de consommables via les mercuriales Hygiène Cèdre.",
+        points: [
+          "L'adhérent peut imposer à la société de propreté de s'approvisionner sur la mercuriale Produits d'Entretien du Cèdre pour bénéficier des tarifs négociés.",
+          "Ou choisir de fournir directement les produits pour supprimer les marges intermédiaires."
+        ],
+        proof: "Synergie entre le marché SDN et le marché Produits d'Entretien du Cèdre."
+      },
+      {
+        tag: "sdn",
+        market: "MARCHÉ : SOCIÉTÉS DE NETTOYAGE (SDN)",
+        category: "préqualification technique nettoyage",
+        question: "« Quelles questions poser lors de la découverte d'un besoin en Sociétés de Nettoyage ? »",
+        posture: "Récolter la volumétrie technique et le contexte contractuel.",
+        points: [
+          "Quelle est la superficie totale nettoyée et la nature des sols ?",
+          "Quel est le montant annuel de la prestation actuelle et la date d'échéance du contrat ?",
+          "Combien d'agents interviennent sur site et à quels horaires (journée ou décalé) ?"
+        ],
+        proof: "Collecte des éléments techniques préalables indispensable au lancement d'une MER ou d'une AOSM."
+      },
+
+      // ==========================================
+      // 11. TELECOM (10 cas)
+      // ==========================================
+      {
+        tag: "telecom",
+        market: "MARCHÉ : TELECOM",
+        category: "charge mentale & accompagnement",
+        question: "« Le client te dit : \"Je n'ai pas le temps, ça fonctionne comme ça, et je n'ai pas le courage de me lancer dans une nouvelle étude télécom !\" Tu réponds quoi ? »",
+        posture: "Proposer la prise en charge intégrale de l'analyse par l'équipe Télécom Cèdre.",
+        points: [
+          "Une équipe d'experts analyse vos factures et contrats actuels pour présenter une synthèse comparative prête à décider.",
+          "Aucune surcharge de travail pour vos équipes : Le Cèdre pilote la bascule administrative."
+        ],
+        proof: "Plus de 50 % d'économies constatées sur les forfaits mobiles et jusqu'à 3 % de RFA reversée."
+      },
+      {
+        tag: "telecom",
+        market: "MARCHÉ : TELECOM",
+        category: "règles d'anticipation par opérateur",
+        question: "« Le client te dit : \"Je suis encore engagé pour plusieurs mois, c'est trop tôt pour en parler.\" Tu réponds quoi ? »",
+        posture: "Appliquer les règles d'anticipation selon l'opérateur concerné.",
+        points: [
+          "Transmettez-nous vos factures pour programmer l'échéancier de sortie sans reconduction tacite.",
+          "Bouygues Pro : rattachement immédiat sans attendre.",
+          "SFR : rattachement possible 6 mois avant la fin de contrat.",
+          "Céleste : rattachement possible après 12 mois d'engagement."
+        ],
+        proof: "Modalités de rattachement officielles : Bouygues Pro (immédiat), SFR (6 mois avant), Céleste (après 12 mois)."
+      },
+      {
+        tag: "telecom",
+        market: "MARCHÉ : TELECOM",
+        category: "grille forfaits mobiles sfr bouygues",
+        question: "« Quels sont les tarifs négociés sur les forfaits mobiles pour convaincre un client de basculer ? »",
+        posture: "Présenter la grille épurée des 4 forfaits répondant à 90 % des besoins du terrain.",
+        points: [
+          "Forfaits professionnels sans engagement de terminal pour écraser la dépense récurrente.",
+          "Forfait 5 Go à 3 € chez Bouygues Pro (4 € chez SFR).",
+          "Forfait 30 Go à 5 € chez Bouygues Pro (6,50 € chez SFR).",
+          "Forfait illimité à 9 € chez Bouygues Pro et SFR (vs 17 € meilleur tarif public)."
+        ],
+        proof: "Grille officielle Cèdre : 30 Go à 5 € HT et illimité à 9 € HT chez SFR et Bouygues Pro."
+      },
+      {
+        tag: "telecom",
+        market: "MARCHÉ : TELECOM",
+        category: "sav statut grands comptes inclus",
+        question: "« Le client te dit : \"Chez les grands opérateurs télécoms, le SAV est injoignable et les pannes durent des semaines.\" Tu réponds quoi ? »",
+        posture: "Opposer le statut 'Grands Comptes' négocié pour chaque adhérent Cèdre.",
+        points: [
+          "Tous les adhérents bénéficient de files d'attente prioritaires et d'un interlocuteur dédié chez les opérateurs.",
+          "Les experts Télécom du Cèdre interviennent au niveau de la direction commerciale en cas de litige technique ou de retard de raccordement."
+        ],
+        proof: "Statut Grand Compte contractuellement accordé par Bouygues Pro, SFR et Céleste à tous les adhérents."
+      },
+      {
+        tag: "telecom",
+        market: "MARCHÉ : TELECOM",
+        category: "fin du réseau cuivre & migration ip",
+        question: "« Le client te dit : \"On me dit que mes lignes téléphoniques RTC vont être coupées, je ne sais pas quoi faire.\" Tu réponds quoi ? »",
+        posture: "Rassurer sur l'accompagnement à la migration IP.",
+        points: [
+          "Le Cèdre sécurise votre bascule du cuivre vers la fibre et la téléphonie IP (TrunkSIP) auprès des 3 grands opérateurs nationaux.",
+          "Conservation des numéros existants et étude de couverture fibre préalable."
+        ],
+        proof: "Connecteur IP (TrunkSIP) négocié à tarif groupé pour moderniser l'autocom sans rupture de service."
+      },
+      {
+        tag: "telecom",
+        market: "MARCHÉ : TELECOM",
+        category: "pyramide d'engagement ip cross-selling",
+        question: "« Comment présenter la stratégie de développement des marchés télécoms et numériques du Cèdre ? »",
+        posture: "Déployer le schéma de la Pyramide Télécom liée par l'IP.",
+        points: [
+          "1. Entrer par le Prix sur le Mobile (Action Réseau rapide).",
+          "2. Développer par le Service : Fixe, Internet, Autocoms, Réseaux, Sûreté et Appels Malades.",
+          "3. Fidéliser par l'Expertise : Sécurité et Informatique (Action Marché globale)."
+        ],
+        proof: "Modèle officiel de cross-selling : de l'accès mobile jusqu'à l'infogérance et la cybersécurité."
+      },
+      {
+        tag: "telecom",
+        market: "MARCHÉ : TELECOM",
+        category: "cibles de reconquête coriolis & orange",
+        question: "« Quels prospects ou adhérents cibler en priorité pour mener une action commerciale Télécom percutante ? »",
+        posture: "Cibler les structures engagées chez Coriolis ou Orange direct.",
+        points: [
+          "Les contrats souscrits directement auprès de ces opérateurs présentent des marges de renégociation massives.",
+          "Les contrats Orange sans clause de reconduction tacite stricte peuvent être dénoncés facilement au profit des accords Cèdre."
+        ],
+        proof: "Plan de prospection : ciblage prioritaire des parcs sous Coriolis et Orange pour déclencher des baisses tarifaires immédiates."
+      },
+      {
+        tag: "telecom",
+        market: "MARCHÉ : TELECOM",
+        category: "parcs > 100 lignes & reconditionné",
+        question: "« Le client te dit : \"Nous avons plus de 120 lignes de service, changer tous les téléphones est hors de prix.\" Tu réponds quoi ? »",
+        posture: "Déployer l'offre de gestion de flotte sur mesure et de terminaux reconditionnés.",
+        points: [
+          "Combinaison d'achats de mobiles professionnels neufs et de smartphones reconditionnés avec nos partenaires de l'économie circulaire solidaire.",
+          "Déploiement d'un outil de gestion centralisée des cartes SIM."
+        ],
+        proof: "Accords d'approvisionnement en mobiles reconditionnés via les partenaires solidaires du Cèdre (Ateliers du Bocage, Olinn)."
+      },
+      {
+        tag: "telecom",
+        market: "MARCHÉ : TELECOM",
+        category: "exemples réels ucly mas st jean",
+        question: "« Quels volumes financiers représente le marché Télécom selon la typologie de structure ? »",
+        posture: "Restituer les trois cas d'école réels de la fiche marché Télécom.",
+        points: [
+          "La téléphonie et la fibre représentent des montants significatifs qui justifient une mise sous contrôle immédiate.",
+          "UCLy Lyon (Scolaire) = 34 700 €/an en fibre (1 300 € FA).",
+          "MAS St Jean Ordre de Malte (EHPAD) = 53 000 €/an en fixe et autocom (1 300 € FA).",
+          "GT Logistique (Entreprise) = 72 300 €/an en fixe (2 700 € FA)."
+        ],
+        proof: "Données réelles marché : UCLy (34,7 k€), MAS St Jean (53 k€), GT Logistique (72,3 k€)."
+      },
+      {
+        tag: "telecom",
+        market: "MARCHÉ : TELECOM",
+        category: "préqualification technique télécom",
+        question: "« Quelles informations indispensables collecter pour lancer une étude Télécom ? »",
+        posture: "Poser les questions de découverte clés.",
+        points: [
+          "Structure multi-sites ?",
+          "Nom des opérateurs actuels et dates d'échéance des abonnements mobiles et accès internet ?",
+          "Récupération de la dernière facture détaillée de chaque opérateur."
+        ],
+        proof: "Frais d'inscription au marché : 1 % du CA pour SIC/ASSO/Entreprise (20 € HT pour Camping)."
+      },
+
+      // ==========================================
+      // 12. SYSTÈMES DE SÉCURITÉ INCENDIE (SSI) (10 cas)
+      // ==========================================
+      {
+        tag: "ssi",
+        market: "MARCHÉ : SYSTÈMES DE SÉCURITÉ INCENDIE (SSI)",
+        category: "composants clés sdi vs smsi",
+        question: "« Le client te dit : \"Un système de détection d'incendie et un système de mise en sécurité, c'est exactement la même chose.\" Tu réponds quoi ? »",
+        posture: "Clarifier la distinction technique entre le SDI et le SMSI.",
+        points: [
+          "Le SDI (Système de Détection Incendie) centralise l'information via l'ECS pour détecter et localiser le feu (fumée, flamme, chaleur).",
+          "Le SMSI (Système de Mise en Sécurité Incendie) agit via le CMSI pour assurer l'évacuation (alarmes), le compartimentage (portes coupe-feu) et le désenfumage mécanique."
+        ],
+        proof: "Architecture réglementaire : distinction stricte entre les fonctions de détection (SDI) et les fonctions d'actionnement de sécurité (SMSI)."
+      },
+      {
+        tag: "ssi",
+        market: "MARCHÉ : SYSTÈMES DE SÉCURITÉ INCENDIE (SSI)",
+        category: "marques fermées vs marques ouvertes",
+        question: "« Le client te dit : \"N'importe quel électricien peut intervenir sur ma centrale incendie DEF ou Siemens.\" Tu réponds quoi ? »",
+        posture: "Alerter sur le verrouillage des technologies dites 'fermées'.",
+        points: [
+          "Les fabricants de matériel fermé (marques propriétaires : DEF, Siemens, Chubb, Aviss) se réservent les interventions logicielles et électroniques.",
+          "Les marques ouvertes (Finsecur, Legrand, URA) permettent à toute entreprise spécialisée d'intervenir librement."
+        ],
+        proof: "Les constructeurs fermés gèrent quasi-exclusivement leur marque (DEF : 100 % DEF ; Siemens et Chubb : 90 % de leur marque)."
+      },
+      {
+        tag: "ssi",
+        market: "MARCHÉ : SYSTÈMES DE SÉCURITÉ INCENDIE (SSI)",
+        category: "maintenance niveau 4 & constructeur",
+        question: "« Le client te dit : \"Mon agent d'entretien peut remplacer lui-même la carte électronique défaillante de la centrale SSI.\" Tu réponds quoi ? »",
+        posture: "Rappeler les contraintes strictes des interventions de maintenance de niveau 4.",
+        points: [
+          "La reprogrammation de la centrale et le remplacement de composants électroniques relèvent obligatoirement du niveau 4.",
+          "Ces interventions doivent être exécutées par un professionnel habilité par le fabricant ou par le constructeur lui-même."
+        ],
+        proof: "Règle réglementaire : obligation d'autorisation constructeur pour toute maintenance de niveau 4."
+      },
+      {
+        tag: "ssi",
+        market: "MARCHÉ : SYSTÈMES DE SÉCURITÉ INCENDIE (SSI)",
+        category: "mainteneurs multimarques qualifiés i7 f7",
+        question: "« Le client te dit : \"Nous avons des équipements de 3 marques différentes sur notre site, il nous faut 3 contrats distincts.\" Tu réponds quoi ? »",
+        posture: "Présenter la solution des mainteneurs multimarques qualifiés I7 / F7.",
+        points: [
+          "Les prestataires multimarques qualifiés I7 / F7 prennent en charge toutes les marques du marché, y compris les marques propriétaires.",
+          "Ils unifient la gestion du site sous un seul contrat de maintenance préventive et corrective."
+        ],
+        proof: "Panier des mainteneurs I7/F7 équilibré sur le marché : Siemens (26 %), Chubb (19 %), Esser (14 %), DEF (8 %), ASD (9 %), Finsecur (8 %)."
+      },
+      {
+        tag: "ssi",
+        market: "MARCHÉ : SYSTÈMES DE SÉCURITÉ INCENDIE (SSI)",
+        category: "absence de contrat cèdre & responsabilité",
+        question: "« Le client te dit : \"Donnez-moi le modèle de contrat de maintenance Cèdre pour mon SSI.\" Tu réponds quoi ? »",
+        posture: "Expliquer pourquoi il n'existe pas de 'Contrat type Cèdre' en SSI.",
+        points: [
+          "Le contenu du contrat est strictement dicté par la réglementation incendie.",
+          "Le niveau de responsabilité juridique en matière de sécurité des personnes est trop lourd pour qu'un groupement se substitue aux obligations légales de l'installateur."
+        ],
+        proof: "Chaque fournisseur utilise son outil de contrat officiel validé ; Le Cèdre met à disposition des outils d'audit comparatif (ACO / tableaux de synthèse)."
+      },
+      {
+        tag: "ssi",
+        market: "MARCHÉ : SYSTÈMES DE SÉCURITÉ INCENDIE (SSI)",
+        category: "pièces clés pour qualifier le dossier",
+        question: "« Quelles informations exiger d'un adhérent pour instruire une demande en maintenance SSI ? »",
+        posture: "Collecter les pièces maîtresses identifiées par le chef de marché.",
+        points: [
+          "Le contrat de maintenance actuel avec la totalité de ses annexes techniques.",
+          "La marque exacte de la centrale, l'âge approximatif de l'installation (5, 10, 15, 20 ans ou plus) et le niveau de satisfaction actuel."
+        ],
+        proof: "Données indispensables pour déterminer si la centrale relève d'un constructeur fermé ou d'un mainteneur multimarques."
+      },
+      {
+        tag: "ssi",
+        market: "MARCHÉ : SYSTÈMES DE SÉCURITÉ INCENDIE (SSI)",
+        category: "remplacement & coordinateur ssi",
+        question: "« Le client te dit : \"Le bureau de contrôle exige le remplacement complet de notre centrale SSI d'ici 6 mois.\" Tu réponds quoi ? »",
+        posture: "Cadrer le dossier de remplacement d'équipement avec un coordinateur SSI.",
+        points: [
+          "Récupérer le devis de remplacement si le mainteneur en place en a déjà produit un.",
+          "Identifier l'origine de la prescription (bureau de contrôle, pompiers, mainteneur) et vérifier la présence d'un coordinateur SSI."
+        ],
+        proof: "Règle formelle : Le Cèdre n'a pas à se prononcer sur la catégorie de SSI à installer dans les ERP ; cette mission incombe obligatoirement à un coordinateur SSI qualifié."
+      },
+      {
+        tag: "ssi",
+        market: "MARCHÉ : SYSTÈMES DE SÉCURITÉ INCENDIE (SSI)",
+        category: "catégories ssi selon classement erp",
+        question: "« Quels types d'ERP sont soumis à l'obligation d'un SSI de Catégorie B ? »",
+        posture: "Citer la typologie des ERP assujettis à la catégorie B selon le référentiel sécurité.",
+        points: [
+          "Les exigences diffèrent selon la catégorie et l'effectif accueilli dans l'établissement.",
+          "Type R (Enseignement 2e et 3e catégorie), Type L (Spectacle 1ère cat. non A), Type M (Commerce 1ère cat.), Type P (Jeux/Danse 2e cat.), Type S (Bibliothèque 2e cat.)."
+        ],
+        proof: "Catégorie B exigée pour les établissements scolaires (Type R 2e et 3e cat.) et grandes salles de spectacle/commerce."
+      },
+      {
+        tag: "ssi",
+        market: "MARCHÉ : SYSTÈMES DE SÉCURITÉ INCENDIE (SSI)",
+        category: "détecteurs ioniques & démantèlement",
+        question: "« Le client te dit : \"Notre vieille centrale incendie fonctionne encore très bien avec ses détecteurs ioniques d'origine.\" Tu réponds quoi ? »",
+        posture: "Rappeler l'interdiction légale et le plan de retrait obligatoire des détecteurs ioniques.",
+        points: [
+          "Les détecteurs ioniques contenant des sources radioactives sont strictement interdits et doivent être démantelés par des filières spécialisées agréées.",
+          "Leur présence oblige à une mise en conformité rapide vers des détecteurs optiques de fumée."
+        ],
+        proof: "Obligation réglementaire de retrait des têtes ioniques et accompagnement Cèdre vers des solutions optiques modernes."
+      },
+      {
+        tag: "ssi",
+        market: "MARCHÉ : SYSTÈMES DE SÉCURITÉ INCENDIE (SSI)",
+        category: "outil d'étude économique cèdre",
+        question: "« Comment le commercial Cèdre peut-il comparer les prix de maintenance SSI des différents acteurs ? »",
+        posture: "Utiliser l'outil d'Étude Économique (EE) multi-fournisseurs développé par Le Cèdre.",
+        points: [
+          "L'outil centralise l'ensemble des grilles tarifaires négociées pour modéliser le coût annuel selon le nombre de points de détection et déclencheurs manuels.",
+          "Permet de comparer immédiatement les constructeurs propriétaires et les mainteneurs indépendants."
+        ],
+        proof: "Outil tableur officiel Cèdre d'EE SSI tous fournisseurs pour chiffrer les écarts en toute neutralité."
+      },
+
+      // ==========================================
+      // 13. ASCENSEURS (10 cas)
+      // ==========================================
+      {
+        tag: "ascenseurs",
+        market: "MARCHÉ : ASCENSEURS",
+        category: "absence de bpu sur le neuf",
+        question: "« Le client te dit : \"Envoyez-moi votre Bordereau de Prix Unitaires (BPU) pour l'installation d'un ascenseur neuf dans notre futur bâtiment.\" Tu réponds quoi ? »",
+        posture: "Clarifier immédiatement l'absence de BPU sur le neuf et positionner l'aide à la comparaison des offres.",
+        points: [
+          "Il n'y a pas de BPU sur le Neuf en ascenseurs car chaque projet architectural et dimension de gaine est unique.",
+          "Le Cèdre apporte un accompagnement sur le besoin pour obtenir le « Bon Produit, au Bon Budget, avec le Bon Accompagnement ».",
+          "Nos experts réalisent une aide concrète à la comparaison et au décryptage technique des devis constructeurs."
+        ],
+        proof: "Règle formelle Cèdre : « IL N'Y A PAS DE BPU SUR LE NEUF !!! » Le BPU pièces et main d'œuvre s'applique exclusivement aux petits travaux et à la maintenance."
+      },
+      {
+        tag: "ascenseurs",
+        market: "MARCHÉ : ASCENSEURS",
+        category: "criticité d'usage & accessibilité pmr",
+        question: "« Le client te dit : \"Chez nous, l'ascenseur ne sert presque jamais, un contrat de maintenance au rabais me suffit largement.\" Tu réponds quoi ? »",
+        posture: "Rappeler le principe d'exigence d'usage immédiate et les impératifs d'accessibilité PMR.",
+        points: [
+          "Hors EHPAD, l'ascenseur est souvent peu sollicité mais demeure obligatoire pour les normes d'accessibilité PMR.",
+          "En cas de panne inopinée, l'exigence d'usage est absolue : l'établissement ne peut pas bloquer l'accès aux étages aux personnes à mobilité réduite.",
+          "Besoin d'interventions rapides et de techniciens qualifiés garantis par nos accords."
+        ],
+        proof: "Règle d'or du chef de marché : « L'ascenseur n'est pas une problématique chez nos adhérents quand ils ne s'en servent pas, et ne doit pas en être une quand ils ont besoin de s'en servir. »"
+      },
+      {
+        tag: "ascenseurs",
+        market: "MARCHÉ : ASCENSEURS",
+        category: "inscription vs demande de rattachement",
+        question: "« Le client te dit : \"Nous sommes inscrits au marché Ascenseurs depuis 2 ans, pourquoi mes factures Otis n'ont-elles pas changé ?\" Tu réponds quoi ? »",
+        posture: "Expliquer la différence fondamentale entre Inscription administrative et Demande formelle de Rattachement.",
+        points: [
+          "L'inscription au marché ne déclenche pas automatiquement l'application des tarifs : il faut impérativement formaliser une demande de rattachement.",
+          "La traçabilité de cette demande permet d'éviter les situations urticantes et donne une vision réelle de la performance du marché.",
+          "Elle active le caractère qualifiant de l'inscription et les outils de suivi chez les ascensoristes."
+        ],
+        proof: "Règle officielle Cèdre : « Inscription ≠ Rattachement ». La demande de rattachement formelle permet en contrepartie une rétroactivité non limitée dans le temps."
+      },
+      {
+        tag: "ascenseurs",
+        market: "MARCHÉ : ASCENSEURS",
+        category: "pièces indispensables découverte",
+        question: "« Quelles sont les pièces indispensables à demander à un adhérent pour instruire son dossier d'ascenseurs ? »",
+        posture: "Collecter les deux pièces contractuelles maîtresses exigées par la méthodologie marché.",
+        points: [
+          "Son contrat de maintenance actuel complet (pour vérifier le type de contrat et la formule de révision).",
+          "Sa dernière facture détaillée (pour constater le montant réel facturé et les éventuelles hausses).",
+          "Vérifier si l'équipement est concerné et si l'adhérent travaille déjà avec l'un de nos fournisseurs référencés."
+        ],
+        proof: "Procédure opérationnelle M2 : analyse du besoin sur pièces (contrat + dernière facture) pour chiffrer immédiatement les économies réalisables."
+      },
+      {
+        tag: "ascenseurs",
+        market: "MARCHÉ : ASCENSEURS",
+        category: "inflation contenue à 5% & sur-négociations",
+        question: "« Le client te dit : \"Mon ascensoriste m'annonce une augmentation annuelle de 12 % due aux coûts de l'énergie et des matières premières.\" Tu réponds quoi ? »",
+        posture: "Opposer l'encadrement des prix et le taux d'inflation moyen contenu négocié par Le Cèdre.",
+        points: [
+          "Le Cèdre a revu son contrat-cadre pour encadrer strictement les révisions tarifaires et challenger les fournisseurs sur le service promis.",
+          "Notre équipe anticipe la gestion des « sur-négociations » et régularise les anciens contrats qui n'avaient jamais été réévalués.",
+          "Permet de neutraliser les disparités abusives selon les fournisseurs."
+        ],
+        proof: "Donnée officielle Cèdre : inflation contenue en moyenne à 5 % d'augmentation sur nos contrats de maintenance."
+      },
+      {
+        tag: "ascenseurs",
+        market: "MARCHÉ : ASCENSEURS",
+        category: "sourcing : départemental vs régional",
+        question: "« Le client te dit : \"Je refuse les grands groupes, je veux intégrer le petit ascensoriste de mon département.\" Tu réponds quoi ? »",
+        posture: "Énoncer la règle de sourcing territorial définie par Le Cèdre.",
+        points: [
+          "Le Cèdre ne référence pas d'acteurs strictement départementaux car ils n'ont pas la solidité financière ni la capacité d'astreinte requise.",
+          "En revanche, Le Cèdre intègre des acteurs régionaux et multirégionaux solides pour répondre aux attentes de proximité.",
+          "Cette politique garantit un service de dépannage pérenne et des interlocuteurs stables."
+        ],
+        proof: "Règle formelle Cèdre : « Fournisseur départemental = NON / Fournisseur Régional ou Multirégional = OUI » (Exemple Sud-Ouest : Aquitaine Ascenseurs = NON / Régional Ascenseurs = OUI)."
+      },
+      {
+        tag: "ascenseurs",
+        market: "MARCHÉ : ASCENSEURS",
+        category: "fournisseurs : 4 majors & perte club otis",
+        question: "« Quels sont les fournisseurs d'ascenseurs référencés au Cèdre et quelles sont les particularités territoriales ? »",
+        posture: "Présenter les 4 Majors de la profession, les grands régionaux et les exclusions de clubs.",
+        points: [
+          "Les 4 Majors nationaux sont tous référencés : KONE, OTIS, SCHINDLER et TK ELEVATOR (TKE).",
+          "Grands Régionaux référencés : AFEO (nouvellement référencé), A2A (référencement étendu) et NSA.",
+          "Acteurs locaux retenus : Loire Ascenseur (42) et Auvergne Ascenseurs (03, 15, 43, 63, 07, 48, 12, 69)."
+        ],
+        proof: "Particularité territoriale officielle : OTIS a perdu son référencement sur le club RHÔNE / AIN / LOIRE."
+      },
+      {
+        tag: "ascenseurs",
+        market: "MARCHÉ : ASCENSEURS",
+        category: "chiffres clés parc & top 1 scolaire",
+        question: "« Quelle est la volumétrie du marché Ascenseurs du Cèdre et quel est le profil type d'adhérent utilisateur ? »",
+        posture: "Restituer la cartographie des 7 000 appareils sous gestion Cèdre.",
+        points: [
+          "Le marché regroupe 7 000 appareils : 4 000 ascenseurs, 2 000 portes automatiques et 1 000 élévateurs / monte-charges.",
+          "Le secteur scolaire et l'enseignement représente le premier domaine utilisateur du marché.",
+          "Suivi par les EHPAD, les congrégations/communautés, les diocèses et les abbayes/monastères."
+        ],
+        proof: "Données clés : 7 000 appareils au total, et plus de 53 % à 55,9 % du taux d'utilisation concentré sur le secteur École / Scolaire / Enseignement."
+      },
+      {
+        tag: "ascenseurs",
+        market: "MARCHÉ : ASCENSEURS",
+        category: "comparaison des offres sur winnie",
+        question: "« Comment un délégué régional ou un adhérent peut-il visualiser et comparer les offres ascenseurs ? »",
+        posture: "Mettre en avant le déploiement du marché sur l'outil WINNIE.",
+        points: [
+          "Le marché Ascenseurs est désormais entièrement déployé sur l'outil interne WINNIE.",
+          "Permet d'apporter une bien meilleure visibilité de l'offre auprès des adhérents.",
+          "Rend la comparaison des devis et des offres fournisseurs beaucoup plus rapide et aisée."
+        ],
+        proof: "Outil WINNIE : module officiel Cèdre pour l'analyse prix, permettant de capter les meilleures offres fournisseurs Cèdre et hors Cèdre."
+      },
+      {
+        tag: "ascenseurs",
+        market: "MARCHÉ : ASCENSEURS",
+        category: "capter les projets neufs en amont",
+        question: "« Le client te dit : \"Les travaux de notre nouveau bâtiment ont commencé, le gros œuvre est fini, on va choisir l'ascenseur.\" Tu réponds quoi ? »",
+        posture: "Alerter sur l'impératif de capter les projets d'ascenseurs neufs dès la phase de conception.",
+        points: [
+          "En phase gros œuvre avancé, les dimensions de la gaine et les réservations techniques sont déjà coulées, ce qui élimine toute concurrence réelle.",
+          "Capter le projet en amont permet d'adapter la gaine aux appareils standards les plus économiques du marché.",
+          "Sécurise le bon dimensionnement technique et évite les surcoûts d'adaptation sur chantier."
+        ],
+        proof: "Enjeu stratégique n°1 du Cèdre sur le Neuf : « Savoir capter les projets en AMONT » pour garantir le Bon Produit au Bon Budget."
+      }
+    ];
+
+    let currentFilter = 'all';
+    let filteredSituations = [...rawSituations];
+    let currentIndex = 0;
+
+    function updateBadgeCounts() {
+      document.getElementById('count-all').innerText = rawSituations.length;
+      document.getElementById('count-alim').innerText = rawSituations.filter(s => s.tag === 'alim').length;
+      document.getElementById('count-sdr').innerText = rawSituations.filter(s => s.tag === 'sdr').length;
+      document.getElementById('count-med').innerText = rawSituations.filter(s => s.tag === 'med').length;
+      document.getElementById('count-energie').innerText = rawSituations.filter(s => s.tag === 'energie').length;
+      document.getElementById('count-print').innerText = rawSituations.filter(s => s.tag === 'print').length;
+      document.getElementById('count-it').innerText = rawSituations.filter(s => s.tag === 'it').length;
+      document.getElementById('count-hyg').innerText = rawSituations.filter(s => s.tag === 'hyg').length;
+      document.getElementById('count-demat').innerText = rawSituations.filter(s => s.tag === 'demat').length;
+      document.getElementById('count-vr').innerText = rawSituations.filter(s => s.tag === 'vr').length;
+      document.getElementById('count-sdn').innerText = rawSituations.filter(s => s.tag === 'sdn').length;
+      document.getElementById('count-telecom').innerText = rawSituations.filter(s => s.tag === 'telecom').length;
+      document.getElementById('count-ssi').innerText = rawSituations.filter(s => s.tag === 'ssi').length;
+      document.getElementById('count-ascenseurs').innerText = rawSituations.filter(s => s.tag === 'ascenseurs').length;
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-700', 'text-white', 'border-emerald-700');
+        btn.classList.add('bg-slate-100', 'text-slate-600', 'border-slate-200');
+      });
+
+      const activeBtn = document.getElementById(`filter-${filter}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'text-slate-600', 'border-slate-200');
+        activeBtn.classList.add('bg-emerald-700', 'text-white', 'border-emerald-700');
+      }
+
+      if (filter === 'all') {
+        filteredSituations = [...rawSituations];
+      } else {
+        filteredSituations = rawSituations.filter(item => item.tag === filter);
+      }
+
+      currentIndex = -1;
+      drawRandomCase();
+    }
+
+    function drawRandomCase() {
+      if (filteredSituations.length === 0) return;
+
+      let newIndex = Math.floor(Math.random() * filteredSituations.length);
+      if (filteredSituations.length > 1 && newIndex === currentIndex) {
+        newIndex = (currentIndex + 1) % filteredSituations.length;
+      }
+      currentIndex = newIndex;
+
+      const item = filteredSituations[currentIndex];
+
+      document.getElementById('card-market').innerText = item.market;
+      document.getElementById('card-category-badge').innerText = item.category;
+      document.getElementById('card-situation-text').innerText = item.question;
+
+      document.getElementById('answer-posture').innerText = item.posture;
+      document.getElementById('answer-proof-text').innerText = item.proof;
+
+      const pointsList = document.getElementById('answer-points');
+      pointsList.innerHTML = '';
+      item.points.forEach(pt => {
+        const li = document.createElement('li');
+        li.innerHTML = pt;
+        pointsList.appendChild(li);
+      });
+
+      document.getElementById('case-counter').innerText = `Cas ${currentIndex + 1} / ${filteredSituations.length}`;
+      closeAnswer();
+    }
+
+    function toggleAnswer() {
+      const drawer = document.getElementById('answer-drawer');
+      const isHidden = drawer.classList.contains('hidden');
+      if (isHidden) {
+        openAnswer();
+      } else {
+        closeAnswer();
+      }
+    }
+
+    function openAnswer() {
+      document.getElementById('answer-drawer').classList.remove('hidden');
+      document.getElementById('toggle-icon').style.transform = 'rotate(180deg)';
+      document.getElementById('toggle-label').innerHTML = `<span>🔒</span><span>Masquer l'angle de riposte</span>`;
+    }
+
+    function closeAnswer() {
+      document.getElementById('answer-drawer').classList.add('hidden');
+      document.getElementById('toggle-icon').style.transform = 'rotate(0deg)';
+      document.getElementById('toggle-label').innerHTML = `<span>💡</span><span>Voir l'angle de riposte & arguments clés</span>`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateBadgeCounts();
+      drawRandomCase();
+    });
+  </script>
+</body>
+</html>
